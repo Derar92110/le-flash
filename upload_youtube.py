@@ -60,7 +60,7 @@ def main():
     if c.get("pied_description"):
         desc += "\n\n" + c["pied_description"]
     status = {"privacyStatus": a.visibilite, "selfDeclaredMadeForKids": False,
-              "containsSyntheticMedia": True}  # voix IA : déclarée (à changer seulement avec l accord de Medley)
+              "containsSyntheticMedia": False}  # retiré à la demande de Medley le 15/11 (voix off de narration)
     if a.publier_a:
         status["publishAt"] = a.publier_a
     body = {"snippet": {"title": s["titre"][:100], "description": desc[:4900],

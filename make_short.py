@@ -221,21 +221,38 @@ def fond(clips_dir, total, tmp, coupes, c, graine=0):
         m = medias[i % len(medias)]
         p = os.path.join(tmp, f"p{i:03d}.mp4")
         n = max(int(round(d * 30)), 2)
-        z0, z1 = (1.0, 1.18) if rnd.random() < 0.6 else (1.18, 1.0)
-        px, py = rnd.choice([(0.5, 0.5), (0.3, 0.5), (0.7, 0.5), (0.5, 0.35), (0.5, 0.65)])
+        est_img = m.lower().endswith(IMG)
+        z0, z1 = (1.0, 1.07) if rnd.random() < 0.6 else (1.07, 1.0)
+        px = rnd.choice([0.3, 0.5, 0.7])
         zoom = f"{z0}+({z1}-{z0})*on/{n}"
-        zp = (f"zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)*{py}':d={n}:s={W}x{H}:fps=30"
-              if m.lower().endswith(IMG) else
-              f"zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)*{py}':d=1:s={W}x{H}:fps=30")
-        couvrir = f"scale={W * 2}:{H * 2}:force_original_aspect_ratio=increase,crop={W * 2}:{H * 2},setsar=1"
-        teinte = "eq=contrast=1.08:saturation=1.15:brightness=-0.04,vignette=PI/5"
-        if m.lower().endswith(IMG):
-            ff("-loop", "1", "-i", m, "-t", f"{d:.3f}", "-vf", f"{couvrir},{zp},{teinte},format=yuv420p",
+        teinte = "eq=contrast=1.06:saturation=1.12"
+        try:
+            iw, ih = map(int, subprocess.check_output([
+                "ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+                "-of", "csv=p=0", m]).decode().split(",")[:2])
+        except Exception:
+            iw, ih = 16, 9
+        if H > W and iw > ih:
+            # image paysage dans un Short : image entière en largeur, fond flouté derrière
+            fh = int(W * ih / iw) // 2 * 2
+            yc = int(H * 0.40 - fh / 2)
+            filtre = (f"[0:v]split[a][b];"
+                      f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,"
+                      f"boxblur=28:2,eq=brightness=-0.22:saturation=1.15[bg];"
+                      f"[b]scale={W * 2}:{fh * 2},setsar=1,zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':"
+                      f"y='(ih-ih/zoom)/2':d={n if est_img else 1}:s={W}x{fh}:fps=30,{teinte}[fg];"
+                      f"[bg][fg]overlay=0:{yc}:shortest=1,fps=30,format=yuv420p[v]")
+        else:
+            filtre = (f"[0:v]scale={W * 2}:{H * 2}:force_original_aspect_ratio=increase,crop={W * 2}:{H * 2},"
+                      f"setsar=1,zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)/2':"
+                      f"d={n if est_img else 1}:s={W}x{H}:fps=30,{teinte},vignette=PI/5,format=yuv420p[v]")
+        if est_img:
+            ff("-loop", "1", "-i", m, "-filter_complex", filtre, "-map", "[v]",
                "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
         else:
             dm = duree(m); debut = rnd.uniform(0, max(dm - d - 0.1, 0))
-            ff("-ss", f"{debut:.2f}", "-i", m, "-t", f"{d:.3f}", "-an",
-               "-vf", f"fps=30,{couvrir},{zp},{teinte},format=yuv420p",
+            ff("-ss", f"{debut:.2f}", "-i", m, "-t", f"{d:.3f}", "-an", "-filter_complex",
+               filtre.replace("[0:v]", "[0:v]fps=30,", 1), "-map", "[v]",
                "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
         parts.append(p)
     lst = os.path.join(tmp, "liste.txt")
