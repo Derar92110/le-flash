@@ -1,0 +1,20 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 3 infos à J-4 (préchargement, tests, heure de sortie) #shorts",
+  "hook": "FLASH GTA 6 · J-4",
+  "segments": [
+    {"texte": "Plus que quatre jours avant GTA 6. Voici les trois infos à connaître aujourd'hui.", "etiquette": "OFFICIEL"},
+    {"texte": "Un : le préchargement est déjà ouvert sur PS5 et Xbox. Prévois jusqu'à *212 gigas* de libre. Le jeu reste verrouillé jusqu'au 19.", "etiquette": "OFFICIEL"},
+    {"texte": "Deux : les premiers tests sortiraient le *18 novembre*, la veille de la sortie. Info du leaker NateTheHate, pas encore confirmée par Rockstar.", "etiquette": "RUMEUR"},
+    {"texte": "Abonne-toi pour ton Flash de demain.", "etiquette": "OFFICIEL"},
+    {"texte": "Trois : en France, le jeu se débloquerait à *minuit pile*, dans la nuit du 18 au 19. C'est ce qu'indiquent les données du PlayStation Store. Toi, tu joues dès minuit ? Dis-le en commentaire.", "etiquette": "RUMEUR"}
+  ],
+  "description": "Le Flash du jour, J-4 avant GTA 6 : le préchargement est ouvert (jusqu'à 212 Go), les tests sont attendus le 18 novembre, et le jeu se débloquerait à minuit en France. Chaque info porte son étiquette : OFFICIEL, RUMEUR ou LEAK.",
+  "tags": ["GTA 6", "GTA VI", "actu GTA 6", "préchargement GTA 6", "sortie GTA 6", "Le Flash"],
+  "sources": [
+    "JustGeek, 3 novembre 2026, d'après le blog Rockstar (préchargement, 212 Go)",
+    "Beebom, 27 octobre 2026, d'après NateTheHate et Insider Gaming (date des tests)",
+    "GTAVice.net via les données du PlayStation Store, septembre 2026 (heure de déblocage)"
+  ],
+  "playlist": "flash_du_jour"
+}
