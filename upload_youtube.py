@@ -45,7 +45,7 @@ def main():
     ap.add_argument("video"); ap.add_argument("script")
     ap.add_argument("--publier-a", help="date ISO 8601 de mise en ligne programmée")
     ap.add_argument("--id-file", help="écrit l'ID de la vidéo publiée dans ce fichier")
-    ap.add_argument("--visibilite", default=os.environ.get("PUBLICATION", "private"),
+    ap.add_argument("--visibilite", default=os.environ.get("PUBLICATION", "public"),
                     choices=["private", "unlisted", "public"])
     a = ap.parse_args()
     s = json.load(open(a.script, encoding="utf-8"))

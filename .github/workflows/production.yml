@@ -2,7 +2,7 @@ name: Le Flash - production quotidienne
 
 on:
   push:
-    paths: ["scripts/**"]        # la veille de 7h35 pousse le script du jour
+    paths: ["scripts/**", "a_rendre_public.txt"]        # la veille de 7h35 pousse le script du jour
   schedule:
     - cron: "45 7 * * *"         # filet de sécurité : 8h45 heure de Paris (hiver)
   workflow_dispatch: {}          # bouton « Run workflow » pour lancer à la main
@@ -38,8 +38,10 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           AUTO_UPLOAD: "1"
-          PUBLICATION: ${{ vars.PUBLICATION || 'private' }}
-        run: python pipeline.py
+          PUBLICATION: ${{ vars.PUBLICATION || 'public' }}
+        run: |
+          python pipeline.py
+          python rendre_public.py
 
       - name: Garder une copie des vidéos (7 jours)
         if: always()
@@ -55,5 +57,5 @@ jobs:
           rm -f client_secret.json token.json
           git config user.name "le-flash-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add publies/ || true
+          git add -A publies/ a_rendre_public.txt || true
           git diff --cached --quiet || (git commit -m "Vidéos publiées $(date +%F)" && git push)

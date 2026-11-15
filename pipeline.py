@@ -73,7 +73,7 @@ def main():
             print(f"[{i}] envoi YouTube (privé)…")
             subprocess.check_call([sys.executable, d("upload_youtube.py"), video,
                                    d("scripts", f"{i}.json"), "--id-file", d("publies", f"{i}.txt"),
-                                   "--visibilite", env.get("PUBLICATION", "private")])
+                                   "--visibilite", env.get("PUBLICATION", "public")])
     print("Terminé.")
 
 
