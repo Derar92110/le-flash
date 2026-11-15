@@ -26,6 +26,16 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
           pip install -q google-api-python-client google-auth-oauthlib
 
+      - name: Cache des images et musiques
+        uses: actions/cache@v4
+        with:
+          path: |
+            clips/gta6
+            musique
+          key: ressources-${{ hashFiles('ressources.py') }}
+      - name: Images GTA 6 officielles + musiques libres de droits
+        run: python ressources.py
+
       - name: Identifiants YouTube (depuis les secrets du dépôt)
         env:
           YT_CLIENT: ${{ secrets.YOUTUBE_CLIENT_SECRET }}

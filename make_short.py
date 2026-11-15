@@ -15,7 +15,7 @@ Montage « rétention » :
   - plans de 1,3 à 2,2 s avec zoom lent (Ken Burns) et changement de cadrage
   - sous-titres 1 à 3 mots, mot prononcé en couleur, apparition en « pop »
   - flash blanc + « whoosh » à chaque nouvelle info, compteur 1/3, étiquette de source
-  - barre de progression en bas, musique rythmée discrète sous la voix
+  - barre de progression en bas, musique libre de droits (dossier musique/) baissée sous la voix
 Dépendances : ffmpeg (avec libass), Python 3.
 """
 import json, math, os, random, re, shutil, subprocess, sys, tempfile
@@ -246,31 +246,44 @@ def fond(clips_dir, total, tmp, coupes, c, graine=0):
 
 
 # ---------------------------------------------------------------- audio
-def bande_son(voix, total, coupes, tmp):
-    """Voix + musique rythmée discrète (générée, libre de droits) + whoosh aux coupes."""
-    musique = os.path.join(tmp, "musique.wav")
-    bpm = 0.5  # 120 BPM
-    kick = f"0.9*sin(2*PI*(45+90*exp(-mod(t,{bpm})*30))*t)*exp(-mod(t,{bpm})*9)"
-    basse = f"0.25*sin(2*PI*55*t)*(0.6+0.4*sin(2*PI*t/{bpm * 8}))"
-    ff("-f", "lavfi", "-i", f"aevalsrc='{kick}+{basse}':s=44100:d={total + 1}",
-       "-f", "lavfi", "-i", f"anoisesrc=d={total + 1}:c=white:a=0.5",
-       "-filter_complex",
-       f"[1:a]highpass=f=7000,volume='0.35*exp(-mod(t+{bpm / 2},{bpm / 2})*40)':eval=frame[hh];"
-       f"[0:a][hh]amix=inputs=2:normalize=0,lowpass=f=9000,volume=0.16[m]",
-       "-map", "[m]", "-ac", "2", musique)
+def choisir_musique(graine):
+    d = os.path.join(ICI, "musique")
+    pistes = sorted(x for x in os.listdir(d) if x.lower().endswith((".mp3", ".wav", ".m4a"))) if os.path.isdir(d) else []
+    return os.path.join(d, pistes[graine % len(pistes)]) if pistes else None
+
+
+def bande_son(voix, total, coupes, tmp, musique=None, graine=0):
+    """Voix + musique libre de droits discrète (baissée sous la voix) + whoosh aux coupes."""
     whoosh = os.path.join(tmp, "whoosh.wav")
     ff("-f", "lavfi", "-i", "anoisesrc=d=0.45:c=pink:a=0.9",
-       "-af", "bandpass=f=1800:width_type=o:w=2,afade=t=in:d=0.25,afade=t=out:st=0.25:d=0.2,volume=0.7", whoosh)
-    entrees = ["-i", voix, "-i", musique]
-    filt = ["[0:a]aformat=channel_layouts=stereo,volume=1.0[v]",
-            "[1:a]aformat=channel_layouts=stereo[mu]"]
-    noms = ["[v]", "[mu]"]
+       "-af", "bandpass=f=1800:width_type=o:w=2,afade=t=in:d=0.25,afade=t=out:st=0.25:d=0.2,volume=0.6", whoosh)
+    entrees = ["-i", voix]
+    filt = ["[0:a]aformat=channel_layouts=stereo,asplit=2[v][vsc]"]
+    noms = ["[v]"]
+    k0 = 1
+    if musique:
+        debut = 0
+        try:
+            debut = random.Random(graine).uniform(0, max(duree(musique) - total - 2, 0))
+        except Exception:
+            pass
+        entrees += ["-ss", f"{debut:.1f}", "-i", musique]
+        filt.append(f"[1:a]aformat=channel_layouts=stereo,volume=0.22,afade=t=in:d=0.6,"
+                    f"afade=t=out:st={max(total - 1.2, 0):.2f}:d=1.2[mu0]")
+        filt.append("[mu0][vsc]sidechaincompress=threshold=0.04:ratio=6:attack=20:release=300[mu]")
+        noms.append("[mu]")
+        k0 = 2
+    else:
+        filt[0] = "[0:a]aformat=channel_layouts=stereo[v]"
     for k, tc in enumerate(coupes):
         entrees += ["-i", whoosh]
         ms = max(int((tc - 0.2) * 1000), 0)
-        filt.append(f"[{k + 2}:a]aformat=channel_layouts=stereo,adelay={ms}|{ms}[w{k}]")
+        filt.append(f"[{k + k0}:a]aformat=channel_layouts=stereo,adelay={ms}|{ms}[w{k}]")
         noms.append(f"[w{k}]")
-    filt.append("".join(noms) + f"amix=inputs={len(noms)}:normalize=0:duration=first,alimiter=limit=0.95[a]")
+    if len(noms) > 1:
+        filt.append("".join(noms) + f"amix=inputs={len(noms)}:normalize=0:duration=first,alimiter=limit=0.95[a]")
+    else:
+        filt.append("[v]anull[a]")
     out = os.path.join(tmp, "audio.m4a")
     ff(*entrees, "-filter_complex", ";".join(filt), "-map", "[a]", "-t", f"{total:.3f}",
        "-c:a", "aac", "-b:a", "192k", out)
@@ -308,8 +321,18 @@ def rendre(script_path, voix, clips_dir, sortie):
         ecrire_ass(os.path.join(tmp, "subs.ass"), s, mots, tms, bornes, total, c, long_format)
         if os.path.isdir(os.path.join(MARQUE, "fonts")):
             shutil.copytree(os.path.join(MARQUE, "fonts"), os.path.join(tmp, "fonts"))
-        bg = fond(clips_dir, total, tmp, coupes, c, graine=hash(s.get("titre", "")) & 0xffff)
-        audio = bande_son(voix, total, coupes, tmp)
+        bg = fond(clips_dir, total, tmp, coupes, c, graine=sum(map(ord, s.get("titre", ""))))
+        graine = sum(map(ord, s.get("titre", "")))
+        musique = choisir_musique(graine)
+        audio = bande_son(voix, total, coupes, tmp, musique, graine)
+        credit = sortie + ".credit.txt"
+        if musique:
+            titre = os.path.splitext(os.path.basename(musique))[0]
+            open(credit, "w", encoding="utf-8").write(
+                f"Musique : « {titre} » Kevin MacLeod (incompetech.com), "
+                "licence Creative Commons Attribution 4.0 : http://creativecommons.org/licenses/by/4.0/\n")
+        elif os.path.exists(credit):
+            os.remove(credit)
         fd = ":fontsdir=fonts" if os.path.isdir(os.path.join(tmp, "fonts")) else ""
         logo = os.path.join(MARQUE, c.get("logo", "logo.png"))
         lw = int(c.get("logo_largeur", 220) * (0.75 if not long_format else 0.6))

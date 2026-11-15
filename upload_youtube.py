@@ -54,10 +54,13 @@ def main():
     desc = s.get("description", "")
     if s.get("sources"):
         desc += "\n\nSources :\n" + "\n".join(f"- {x}" for x in s["sources"])
+    cr = a.video + ".credit.txt"
+    if os.path.exists(cr):
+        desc += "\n\n" + open(cr, encoding="utf-8").read().strip()
     if c.get("pied_description"):
         desc += "\n\n" + c["pied_description"]
     status = {"privacyStatus": a.visibilite, "selfDeclaredMadeForKids": False,
-              "containsSyntheticMedia": True}  # voix IA : à déclarer
+              "containsSyntheticMedia": True}  # voix IA : déclarée (à changer seulement avec l accord de Medley)
     if a.publier_a:
         status["publishAt"] = a.publier_a
     body = {"snippet": {"title": s["titre"][:100], "description": desc[:4900],
