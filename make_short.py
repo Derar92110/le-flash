@@ -93,12 +93,16 @@ def timings(mots, total, alignement=None):
     return res
 
 
-def groupes(mots, n=3):
-    """Regroupe les indices de mots en sous-titres de 1 à n mots (coupure sur ponctuation)."""
+def groupes(mots, n=5, maxi=24):
+    """Regroupe les mots en sous-titres lisibles : une idée courte, coupure sur la ponctuation."""
     g, cur = [], []
     for i, (m, cle) in enumerate(mots):
+        meme_cle = cur and cle and mots[cur[-1]][1]
+        if cur and not meme_cle and len(" ".join(mots[j][0] for j in cur + [i])) > maxi:
+            g.append(cur); cur = []
         cur.append(i)
-        if len(cur) >= n or re.search(r"[.!?:,;]$", m) or len(" ".join(mots[j][0] for j in cur)) > 16:
+        suivant_cle = i + 1 < len(mots) and cle and mots[i + 1][1]
+        if (len(cur) >= n and not suivant_cle) or re.search(r"[.!?:;]$", m):
             g.append(cur); cur = []
     if cur: g.append(cur)
     return g
@@ -113,33 +117,50 @@ def ecrire_ass(path, s, mots, tms, bornes_segments, total, c, long_format):
     police = c.get("police", "Anton"); bandeau = c.get("police_bandeau", police)
     blanc = ass_col(c.get("couleur_texte", "#ffffff")); noir = ass_col(c.get("couleur_contour", "#000000"))
     bleu = ass_col(c.get("couleur_mot_cle", "#1f6bff")); rouge = ass_col(c.get("couleur_hook_fond", "#ff2d3d"))
-    fs = 88 if long_format else 128
+    fs = 80 if long_format else 112
     y_sub = int(H * (0.78 if long_format else 0.62))
-    y_etiq = int(H * (0.12 if long_format else 0.17))
+    y_etiq = int(H * (0.10 if long_format else 0.12))
     L = []
-    # sous-titres mot par mot
-    for g in groupes(mots, 4 if long_format else 3):
+    # sous-titres : 1 ou 2 lignes, mot prononcé surligné en bleu, mot clé en rouge
+    for ng, g in enumerate(groupes(mots, 6 if long_format else 5, 30 if long_format else 24)):
         g_debut = tms[g[0]][0]
         g_fin = tms[g[-1]][1]
         suiv = [tms[i][0] for i in range(g[-1] + 1, len(mots))]
-        g_fin = max(g_fin, min(suiv[0], g_fin + 0.4) if suiv else total)
+        g_fin = max(g_fin, min(suiv[0], g_fin + 0.5) if suiv else total)
+        # coupure en 2 lignes équilibrées si le groupe est long
+        lg = [len(mots[j][0]) for j in g]
+        coupe = None
+        if sum(lg) + len(g) > 14 and len(g) > 1:
+            cumul, moitie = 0, (sum(lg) + len(g)) / 2
+            for k, x in enumerate(lg[:-1]):
+                cumul += x + 1
+                if cumul >= moitie:
+                    coupe = k; break
+            coupe = len(g) // 2 - 1 if coupe is None else coupe
+        rot = ("\\frz1.5" if ng % 2 else "\\frz-1.5")
         for k, i in enumerate(g):
             a = tms[i][0] if k else g_debut
             b = tms[g[k + 1]][0] if k + 1 < len(g) else g_fin
             if b - a < 0.02:
                 continue
-            morceaux = []
-            for j in g:
+            txt_l = []
+            for kk, j in enumerate(g):
                 m, cle = mots[j]
-                txt = propre(m)
+                t = propre(m)
                 if j == i:
-                    morceaux.append("{\\1c" + bleu + "&\\fscx112\\fscy112}" + txt + "{\\r}")
+                    t = "{\\3c" + bleu + "&\\bord16\\shad0}" + t + "{\\r}"
                 elif cle:
-                    morceaux.append("{\\1c" + rouge + "&}" + txt + "{\\r}")
-                else:
-                    morceaux.append(txt)
-            pop = "\\fscx70\\fscy70\\t(0,90,\\fscx108\\fscy108)\\t(90,160,\\fscx100\\fscy100)" if k == 0 else ""
-            L.append(f"Dialogue: 5,{ts(a)},{ts(b)},Main,,0,0,0,,{{\\an5\\pos({W // 2},{y_sub}){pop}}}" + " ".join(morceaux))
+                    t = "{\\1c" + rouge + "&}" + t + "{\\r}"
+                txt_l.append(t + ("\\N" if kk == coupe else " "))
+            pop = "\\fscx75\\fscy75\\t(0,110,\\fscx105\\fscy105)\\t(110,190,\\fscx100\\fscy100)" if k == 0 else ""
+            L.append(f"Dialogue: 5,{ts(a)},{ts(b)},Main,,0,0,0,,{{\\an5\\pos({W // 2},{y_sub}){rot}{pop}}}" + "".join(txt_l).strip())
+    # titre de chaque info : bandeau qui glisse depuis la gauche
+    y_titre = int(H * (0.20 if long_format else 0.19))
+    for g, (t0, t1) in zip(s.get("segments") or [], bornes_segments):
+        if g.get("titre"):
+            tt = propre(g["titre"])
+            L.append(f"Dialogue: 4,{ts(t0)},{ts(t1)},Titre,,0,0,0,,"
+                     f"{{\\an5\\move({-W // 2},{y_titre},{W // 2},{y_titre},0,220)\\fad(0,150)}}{tt}")
     # hook : bandeau rouge qui claque sur les 2 premières secondes
     hook = propre(s.get("hook", ""))
     if hook:
@@ -176,7 +197,8 @@ WrapStyle: 1
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Main,{police},{fs},{blanc},{blanc},{noir},&H80000000,0,0,0,0,100,100,1,0,1,9,6,5,50,50,0,1
+Style: Main,{police},{fs},{blanc},{blanc},{noir},&H90000000,0,0,0,0,100,100,2,0,1,10,5,5,50,50,0,1
+Style: Titre,{bandeau},{70 if long_format else 92},&H00FFFFFF,&H00FFFFFF,{bleu},&H00000000,0,0,0,0,100,100,4,0,3,18,0,5,0,0,0,1
 Style: Hook,{bandeau},{fs},&H00FFFFFF,&H00FFFFFF,{rouge},&H00000000,0,0,0,0,100,100,3,0,3,22,0,5,40,40,0,1
 Style: Etiquette,{bandeau},{60 if long_format else 78},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,3,0,3,14,0,7,0,0,0,1
 Style: Compteur,{bandeau},{60 if long_format else 78},&H00FFFFFF,&H00FFFFFF,{rouge},&H00000000,0,0,0,0,100,100,3,0,3,14,0,9,0,0,0,1
@@ -209,15 +231,17 @@ def fond(clips_dir, total, tmp, coupes, c, graine=0):
     bornes, t = [0.0], 0.0
     coupes = sorted(x for x in coupes if 0.5 < x < total - 0.5)
     while t < total:
-        nxt = t + rnd.uniform(1.3, 2.2)
-        prochaines = [x for x in coupes if t + 0.6 < x <= nxt + 0.4]
+        nxt = t + rnd.uniform(2.4, 3.2)
+        prochaines = [x for x in coupes if t + 1.0 < x <= nxt + 0.8]
         t = prochaines[0] if prochaines else nxt
         bornes.append(min(t, total))
-    parts = []
-    for i, (a, b) in enumerate(zip(bornes, bornes[1:])):
-        d = b - a
-        if d < 0.05:
-            continue
+    bornes = [x for k, x in enumerate(bornes) if k == 0 or x - bornes[k - 1] > 0.4 or k == len(bornes) - 1]
+    T = 0.3  # durée des transitions
+    parts, debuts = [], []
+    plans = list(zip(bornes, bornes[1:]))
+    for i, (a, b) in enumerate(plans):
+        d = (b - a) + (T if i < len(plans) - 1 else 0)  # chaque plan déborde sous la transition
+        debuts.append(a)
         m = medias[i % len(medias)]
         p = os.path.join(tmp, f"p{i:03d}.mp4")
         n = max(int(round(d * 30)), 2)
@@ -255,10 +279,20 @@ def fond(clips_dir, total, tmp, coupes, c, graine=0):
                filtre.replace("[0:v]", "[0:v]fps=30,", 1), "-map", "[v]",
                "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
         parts.append(p)
-    lst = os.path.join(tmp, "liste.txt")
-    with open(lst, "w") as f:
-        f.writelines(f"file '{x}'\n" for x in parts)
-    ff("-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", out)
+    if len(parts) == 1:
+        shutil.copy(parts[0], out); return out
+    # transitions : glissement à chaque nouvelle info, fondu rapide sinon
+    entrees, chaine, prec = [], [], "[0:v]"
+    for x in parts:
+        entrees += ["-i", x]
+    for j in range(1, len(parts)):
+        nouvelle_info = any(abs(debuts[j] - x) < 0.05 for x in coupes)
+        tr = "slideleft" if nouvelle_info else rnd.choice(["fade", "fade", "smoothup", "circleopen"])
+        sortie_j = "[v]" if j == len(parts) - 1 else f"[x{j}]"
+        chaine.append(f"{prec}[{j}:v]xfade=transition={tr}:duration={T}:offset={debuts[j]:.3f}{sortie_j}")
+        prec = sortie_j
+    ff(*entrees, "-filter_complex", ";".join(chaine), "-map", "[v]", "-c:v", "libx264",
+       "-preset", "veryfast", "-pix_fmt", "yuv420p", "-r", "30", out)
     return out
 
 

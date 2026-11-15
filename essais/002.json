@@ -3,10 +3,25 @@
   "titre": "GTA 6 : 3 infos à J-4 #shorts",
   "hook": "FLASH GTA 6 · J-4",
   "segments": [
-    {"texte": "GTA 6 dans quatre jours. Trois infos.", "etiquette": "OFFICIEL"},
-    {"texte": "Un : le préchargement est ouvert. Prévois *212 gigas*.", "etiquette": "OFFICIEL"},
-    {"texte": "Deux : les tests tomberaient le *18 novembre*.", "etiquette": "RUMEUR"},
-    {"texte": "Trois : déblocage à *minuit pile* en France. Abonne-toi pour demain !", "etiquette": "RUMEUR"}
+    {
+      "texte": "GTA 6 sort dans quatre jours. Voici les trois infos du jour.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Préchargement",
+      "texte": "Un : le préchargement est déjà ouvert sur PS5 et Xbox. Prévois jusqu'à *212 gigas* d'espace libre.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Les tests",
+      "texte": "Deux : les premiers tests tomberaient le *18 novembre*, la veille de la sortie.",
+      "etiquette": "RUMEUR"
+    },
+    {
+      "titre": "Heure de sortie",
+      "texte": "Trois : en France, le jeu se débloquerait à *minuit pile*. Abonne-toi pour ton Flash de demain !",
+      "etiquette": "RUMEUR"
+    }
   ],
   "description": "Aperçu, non publié.",
   "tags": [],
