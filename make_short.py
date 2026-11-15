@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
-"""Le Flash : assemble un Short vertical (1080x1920) à partir d'une voix off,
-d'un script et de clips de gameplay.
+"""Le Flash : monte un Short vertical (1080x1920) ou une vidéo longue (1920x1080)
+à partir d'une voix off, d'un script et d'images/clips de fond.
 
 Usage :
-  python3 make_short.py scripts/001.json voix.mp3 clips/ sortie.mp4
+  python3 make_short.py scripts/001.json voix/001.mp3 clips/ sorties/001.mp4
 
-- scripts/001.json : {"format": "short"|"long", "titre": "...", "hook": "...", "texte": "..."}
-                    short = vertical 1080x1920, long = horizontal 1920x1080
-- voix.mp3        : la voix off ElevenLabs
-- clips/          : dossier de captures de gameplay (.mp4/.mov) faites par toi.
-                    Vide ou absent -> fond néon animé (pour tester).
-Le script découpe le texte en sous-titres de 3 à 5 mots, synchronisés au
-prorata de la durée de la voix, et les incruste en gros au centre.
-Dépendances : ffmpeg, Python 3 (aucune lib externe).
+- scripts/001.json : {"format": "short"|"long", "titre", "hook", "segments"|"texte", ...}
+- voix/001.mp3     : voix off ElevenLabs. Si voix/001.json existe (horodatage mot par
+                     mot renvoyé par l'API), les sous-titres sont calés au mot près.
+- clips/           : images (.jpg .png .webp) et/ou vidéos (.mp4 .mov ...) de fond.
+                     Vide -> fond animé aux couleurs de la chaîne.
+
+Montage « rétention » :
+  - plans de 1,3 à 2,2 s avec zoom lent (Ken Burns) et changement de cadrage
+  - sous-titres 1 à 3 mots, mot prononcé en couleur, apparition en « pop »
+  - flash blanc + « whoosh » à chaque nouvelle info, compteur 1/3, étiquette de source
+  - barre de progression en bas, musique rythmée discrète sous la voix
+Dépendances : ffmpeg (avec libass), Python 3.
 """
-import json, os, random, re, subprocess, sys, tempfile
+import json, math, os, random, re, shutil, subprocess, sys, tempfile
 
-import platform
-W, H = 1080, 1920  # Short vertical ; "long" -> 1920x1080
-POLICE = "Arial Black" if platform.system() == "Windows" else "DejaVu Sans"
-MARQUE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "marque")
+W, H = 1080, 1920
+ICI = os.path.dirname(os.path.abspath(__file__))
+MARQUE = os.path.join(ICI, "marque")
+IMG = (".jpg", ".jpeg", ".png", ".webp")
+VID = (".mp4", ".mov", ".mkv", ".webm")
 
 
 def charte():
@@ -38,106 +43,241 @@ def regler_format(fmt):
 
 
 def duree(path):
-    out = subprocess.check_output([
+    return float(subprocess.check_output([
         "ffprobe", "-v", "error", "-show_entries", "format=duration",
-        "-of", "default=nw=1:nk=1", path]).decode().strip()
-    return float(out)
+        "-of", "default=nw=1:nk=1", path]).decode().strip())
 
 
-def morceaux(texte, n=4):
-    # un mot clé *entre étoiles* reste groupé dans le même sous-titre
-    texte = re.sub(r"\*([^*]+)\*", lambda m: "*" + m.group(1).replace(" ", "§") + "*", texte)
-    mots = texte.split()
-    blocs, cur = [], []
-    for m in mots:
-        cur.append(m)
-        if len(cur) >= n or re.search(r"[.!?:,]$", m) and len(cur) >= 2:
-            blocs.append(" ".join(cur)); cur = []
-    if cur:
-        blocs.append(" ".join(cur))
-    return blocs
+def ff(*args, cwd=None):
+    subprocess.check_call(["ffmpeg", "-y", "-v", "error", *args], cwd=cwd)
 
 
 def ts(t):
+    t = max(t, 0)
     h, r = divmod(t, 3600); m, s = divmod(r, 60)
     return f"{int(h)}:{int(m):02d}:{s:05.2f}"
 
 
-def ass(blocs, total, path, long_format=False, c=None):
-    c = c or {}
-    police = c.get("police", POLICE)
-    blanc = ass_col(c.get("couleur_texte", "#ffffff"))
-    contour = ass_col(c.get("couleur_contour", "#000000"))
-    cle = ass_col(c.get("couleur_mot_cle", "#ffd400"))
-    hook_fond = ass_col(c.get("couleur_hook_fond", "#ff2d3d"))
-    hook_txt = ass_col(c.get("couleur_hook_texte", "#ffffff"))
-    bandeau = c.get("police_bandeau", police)
-    poids = [max(len(b), 1) for b in blocs]
-    somme = sum(poids)
-    t = 0.0
-    lignes = []
-    for b, p in zip(blocs, poids):
-        d = total * p / somme
-        txt = b.upper().replace("\\", "").replace("{", "(").replace("}", ")")
-        txt = re.sub(r"\*([^*]+)\*", lambda m: "{\\1c" + cle + "&}" + m.group(1) + "{\\r}", txt)
-        txt = txt.replace("*", "").replace("§", " ")
-        lignes.append(f"Dialogue: 0,{ts(t)},{ts(t + d)},Main,,0,0,0,,{txt}")
-        t += d
+# ---------------------------------------------------------------- mots et timing
+def mots_du_script(texte):
+    """Liste de (mot, est_mot_cle) dans l'ordre, à partir du texte avec *mots clés*."""
+    out, cle = [], False
+    for brut in texte.split():
+        debut, fin = brut.startswith("*"), brut.rstrip(".,!?:;»\"'").endswith("*")
+        if debut:
+            cle = True
+        out.append((brut.replace("*", ""), cle or debut))
+        if fin:
+            cle = False
+    return out
+
+
+def timings(mots, total, alignement=None):
+    """[(debut, fin)] par mot : depuis l'horodatage ElevenLabs si dispo, sinon au prorata."""
+    if alignement:
+        ch = alignement["characters"]; d0 = alignement["character_start_times_seconds"]
+        d1 = alignement["character_end_times_seconds"]
+        res, cur = [], None
+        for c, a, b in zip(ch, d0, d1):
+            if c.isspace():
+                if cur: res.append(cur); cur = None
+            else:
+                cur = [a, b] if cur is None else [cur[0], b]
+        if cur: res.append(cur)
+        if len(res) == len(mots):
+            return [tuple(r) for r in res]
+        print(f"(alignement ignoré : {len(res)} mots audio pour {len(mots)} mots texte)")
+    poids = [len(m) + 2 for m, _ in mots]; s = sum(poids); t = 0.0; res = []
+    for p in poids:
+        d = total * p / s; res.append((t, t + d)); t += d
+    return res
+
+
+def groupes(mots, n=3):
+    """Regroupe les indices de mots en sous-titres de 1 à n mots (coupure sur ponctuation)."""
+    g, cur = [], []
+    for i, (m, cle) in enumerate(mots):
+        cur.append(i)
+        if len(cur) >= n or re.search(r"[.!?:,;]$", m) or len(" ".join(mots[j][0] for j in cur)) > 16:
+            g.append(cur); cur = []
+    if cur: g.append(cur)
+    return g
+
+
+def propre(t):
+    return t.upper().replace("\\", "").replace("{", "(").replace("}", ")")
+
+
+# ---------------------------------------------------------------- sous-titres ASS
+def ecrire_ass(path, s, mots, tms, bornes_segments, total, c, long_format):
+    police = c.get("police", "Anton"); bandeau = c.get("police_bandeau", police)
+    blanc = ass_col(c.get("couleur_texte", "#ffffff")); noir = ass_col(c.get("couleur_contour", "#000000"))
+    bleu = ass_col(c.get("couleur_mot_cle", "#1f6bff")); rouge = ass_col(c.get("couleur_hook_fond", "#ff2d3d"))
+    fs = 88 if long_format else 128
+    y_sub = int(H * (0.78 if long_format else 0.62))
+    y_etiq = int(H * (0.12 if long_format else 0.17))
+    L = []
+    # sous-titres mot par mot
+    for g in groupes(mots, 4 if long_format else 3):
+        g_debut = tms[g[0]][0]
+        g_fin = tms[g[-1]][1]
+        suiv = [tms[i][0] for i in range(g[-1] + 1, len(mots))]
+        g_fin = max(g_fin, min(suiv[0], g_fin + 0.4) if suiv else total)
+        for k, i in enumerate(g):
+            a = tms[i][0] if k else g_debut
+            b = tms[g[k + 1]][0] if k + 1 < len(g) else g_fin
+            if b - a < 0.02:
+                continue
+            morceaux = []
+            for j in g:
+                m, cle = mots[j]
+                txt = propre(m)
+                if j == i:
+                    morceaux.append("{\\1c" + bleu + "&\\fscx112\\fscy112}" + txt + "{\\r}")
+                elif cle:
+                    morceaux.append("{\\1c" + rouge + "&}" + txt + "{\\r}")
+                else:
+                    morceaux.append(txt)
+            pop = "\\fscx70\\fscy70\\t(0,90,\\fscx108\\fscy108)\\t(90,160,\\fscx100\\fscy100)" if k == 0 else ""
+            L.append(f"Dialogue: 5,{ts(a)},{ts(b)},Main,,0,0,0,,{{\\an5\\pos({W // 2},{y_sub}){pop}}}" + " ".join(morceaux))
+    # hook : bandeau rouge qui claque sur les 2 premières secondes
+    hook = propre(s.get("hook", ""))
+    if hook:
+        L.append(f"Dialogue: 6,{ts(0)},{ts(min(2.2, total))},Hook,,0,0,0,,"
+                 f"{{\\an5\\pos({W // 2},{int(H * (0.30 if long_format else 0.33))})"
+                 f"\\fscx160\\fscy160\\t(0,150,\\fscx100\\fscy100)\\fad(0,150)}}{hook}")
+    # étiquettes, compteur, flashs blancs
+    etiqs = c.get("etiquettes", {})
+    segs = s.get("segments") or []
+    numeros = [g for g in segs if not g.get("sans_numero")]
+    n_info = 0
+    for k, (g, (t0, t1)) in enumerate(zip(segs or [s], bornes_segments)):
+        e = (g.get("etiquette") or "").upper()
+        if e in etiqs:
+            L.append(f"Dialogue: 4,{ts(t0)},{ts(t1)},Etiquette,,0,0,0,,{{\\an7\\pos(50,{y_etiq})"
+                     f"\\3c{ass_col(etiqs[e]['fond'])}&\\1c{ass_col(etiqs[e]['texte'])}&"
+                     f"\\fscx60\\fscy60\\t(0,120,\\fscx100\\fscy100)}}{e}")
+        if segs and len(segs) > 2 and 0 < k and re.match(r"^\s*(un|deux|trois|quatre|cinq|1|2|3|4|5)\b", g["texte"], re.I):
+            n_info += 1
+            nb = sum(1 for x in segs if re.match(r"^\s*(un|deux|trois|quatre|cinq|1|2|3|4|5)\b", x["texte"], re.I))
+            L.append(f"Dialogue: 4,{ts(t0)},{ts(t1)},Compteur,,0,0,0,,{{\\an9\\pos({W - 50},{y_etiq})"
+                     f"\\fscx60\\fscy60\\t(0,120,\\fscx100\\fscy100)}}{n_info}/{nb}")
+        if k > 0:  # flash blanc au changement d'info
+            L.append(f"Dialogue: 3,{ts(t0)},{ts(t0 + 0.25)},Dessin,,0,0,0,,{{\\an7\\pos(0,0)\\1c&HFFFFFF&"
+                     f"\\alpha&H60&\\t(0,250,\\alpha&HFF&)\\p1}}m 0 0 l {W} 0 {W} {H} 0 {H}")
+    # barre de progression
+    L.append(f"Dialogue: 7,{ts(0)},{ts(total)},Dessin,,0,0,0,,{{\\an7\\pos(0,{H - 16})\\1c{bleu}&"
+             f"\\fscx0\\t(0,{int(total * 1000)},\\fscx100)\\p1}}m 0 0 l {W} 0 {W} 16 0 16")
     entete = f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: {W}
 PlayResY: {H}
+WrapStyle: 1
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Main,{police},{72 if long_format else 100},{blanc},{blanc},{contour},{cle},1,0,0,0,100,100,0,0,1,7,4,{2 if long_format else 5},60,60,{90 if long_format else 0},1
-Style: Hook,{bandeau},{80 if long_format else 96},{hook_txt},{hook_txt},{hook_fond},&H00000000,0,0,0,0,100,100,2,0,3,16,0,8,60,60,{80 if long_format else 180},1
-Style: Etiquette,{bandeau},{60 if long_format else 76},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,3,0,3,12,0,7,60,60,0,1
-Style: Compteur,{bandeau},{60 if long_format else 76},&H00FFFFFF,&H00FFFFFF,{hook_fond},&H00000000,0,0,0,0,100,100,2,0,3,12,0,9,60,60,0,1
+Style: Main,{police},{fs},{blanc},{blanc},{noir},&H80000000,0,0,0,0,100,100,1,0,1,9,6,5,50,50,0,1
+Style: Hook,{bandeau},{fs},&H00FFFFFF,&H00FFFFFF,{rouge},&H00000000,0,0,0,0,100,100,3,0,3,22,0,5,40,40,0,1
+Style: Etiquette,{bandeau},{60 if long_format else 78},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,3,0,3,14,0,7,0,0,0,1
+Style: Compteur,{bandeau},{60 if long_format else 78},&H00FFFFFF,&H00FFFFFF,{rouge},&H00000000,0,0,0,0,100,100,3,0,3,14,0,9,0,0,0,1
+Style: Dessin,Arial,10,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     with open(path, "w", encoding="utf-8") as f:
-        f.write(entete + "\n".join(lignes) + "\n")
+        f.write(entete + "\n".join(L) + "\n")
 
 
-def fond(clips_dir, total, tmp):
-    clips = []
+# ---------------------------------------------------------------- fond animé
+def fond(clips_dir, total, tmp, coupes, c, graine=0):
+    medias = []
     if clips_dir and os.path.isdir(clips_dir):
-        clips = [os.path.join(clips_dir, c) for c in sorted(os.listdir(clips_dir))
-                 if c.lower().endswith((".mp4", ".mov", ".mkv", ".webm"))]
+        for racine, _, fichiers in os.walk(clips_dir):
+            medias += [os.path.join(racine, x) for x in sorted(fichiers) if x.lower().endswith(IMG + VID)]
     out = os.path.join(tmp, "fond.mp4")
-    vf = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,fps=30"
-    if not clips:
-        # Fond néon de test (dégradé animé rose/cyan)
-        subprocess.check_call([
-            "ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i",
-            f"color=c={charte().get('couleur_fond', '#0e0e12').replace('#', '0x')}:s={W}x{H}:d={total}:r=30",
-            "-vf", "noise=alls=8:allf=t,vignette=PI/5",
-            "-c:v", "libx264", "-pix_fmt", "yuv420p", out])
+    if not medias:
+        c1 = c.get("couleur_fond", "#070b1a").lstrip("#"); c2 = c.get("couleur_mot_cle", "#1f6bff").lstrip("#")
+        ff("-f", "lavfi", "-i", f"gradients=s={W}x{H}:c0=0x{c1}:c1=0x{c2}:c2=0x{c1}:c3=0x{c.get('couleur_hook_fond', '#ff2d3d').lstrip('#')}"
+           f":nb_colors=4:speed=0.015:d={total}:r=30",
+           "-vf", "eq=brightness=-0.25:saturation=1.2,noise=alls=10:allf=t,vignette=PI/4",
+           "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", out)
         return out
-    # Enchaîne des extraits de 2,5 s pris au hasard dans tes clips
-    random.seed(42)
-    parts, t, i = [], 0.0, 0
+    rnd = random.Random(graine)
+    rnd.shuffle(medias)
+    # durées de plans : coupe obligatoire à chaque nouvelle info, sinon toutes les 1,3 à 2,2 s
+    bornes, t = [0.0], 0.0
+    coupes = sorted(x for x in coupes if 0.5 < x < total - 0.5)
     while t < total:
-        c = clips[i % len(clips)]; i += 1
-        d = duree(c)
-        seg = min(2.5, total - t)
-        start = random.uniform(0, max(d - seg, 0))
+        nxt = t + rnd.uniform(1.3, 2.2)
+        prochaines = [x for x in coupes if t + 0.6 < x <= nxt + 0.4]
+        t = prochaines[0] if prochaines else nxt
+        bornes.append(min(t, total))
+    parts = []
+    for i, (a, b) in enumerate(zip(bornes, bornes[1:])):
+        d = b - a
+        if d < 0.05:
+            continue
+        m = medias[i % len(medias)]
         p = os.path.join(tmp, f"p{i:03d}.mp4")
-        subprocess.check_call([
-            "ffmpeg", "-y", "-v", "error", "-ss", f"{start:.2f}", "-t", f"{seg:.2f}",
-            "-i", c, "-an", "-vf", vf, "-c:v", "libx264", "-pix_fmt", "yuv420p", p])
-        parts.append(p); t += seg
+        n = max(int(round(d * 30)), 2)
+        z0, z1 = (1.0, 1.18) if rnd.random() < 0.6 else (1.18, 1.0)
+        px, py = rnd.choice([(0.5, 0.5), (0.3, 0.5), (0.7, 0.5), (0.5, 0.35), (0.5, 0.65)])
+        zoom = f"{z0}+({z1}-{z0})*on/{n}"
+        zp = (f"zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)*{py}':d={n}:s={W}x{H}:fps=30"
+              if m.lower().endswith(IMG) else
+              f"zoompan=z='{zoom}':x='(iw-iw/zoom)*{px}':y='(ih-ih/zoom)*{py}':d=1:s={W}x{H}:fps=30")
+        couvrir = f"scale={W * 2}:{H * 2}:force_original_aspect_ratio=increase,crop={W * 2}:{H * 2},setsar=1"
+        teinte = "eq=contrast=1.08:saturation=1.15:brightness=-0.04,vignette=PI/5"
+        if m.lower().endswith(IMG):
+            ff("-loop", "1", "-i", m, "-t", f"{d:.3f}", "-vf", f"{couvrir},{zp},{teinte},format=yuv420p",
+               "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
+        else:
+            dm = duree(m); debut = rnd.uniform(0, max(dm - d - 0.1, 0))
+            ff("-ss", f"{debut:.2f}", "-i", m, "-t", f"{d:.3f}", "-an",
+               "-vf", f"fps=30,{couvrir},{zp},{teinte},format=yuv420p",
+               "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
+        parts.append(p)
     lst = os.path.join(tmp, "liste.txt")
     with open(lst, "w") as f:
-        f.writelines(f"file '{p}'\n" for p in parts)
-    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0",
-                           "-i", lst, "-c", "copy", out])
+        f.writelines(f"file '{x}'\n" for x in parts)
+    ff("-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", out)
     return out
 
 
+# ---------------------------------------------------------------- audio
+def bande_son(voix, total, coupes, tmp):
+    """Voix + musique rythmée discrète (générée, libre de droits) + whoosh aux coupes."""
+    musique = os.path.join(tmp, "musique.wav")
+    bpm = 0.5  # 120 BPM
+    kick = f"0.9*sin(2*PI*(45+90*exp(-mod(t,{bpm})*30))*t)*exp(-mod(t,{bpm})*9)"
+    basse = f"0.25*sin(2*PI*55*t)*(0.6+0.4*sin(2*PI*t/{bpm * 8}))"
+    ff("-f", "lavfi", "-i", f"aevalsrc='{kick}+{basse}':s=44100:d={total + 1}",
+       "-f", "lavfi", "-i", f"anoisesrc=d={total + 1}:c=white:a=0.5",
+       "-filter_complex",
+       f"[1:a]highpass=f=7000,volume='0.35*exp(-mod(t+{bpm / 2},{bpm / 2})*40)':eval=frame[hh];"
+       f"[0:a][hh]amix=inputs=2:normalize=0,lowpass=f=9000,volume=0.16[m]",
+       "-map", "[m]", "-ac", "2", musique)
+    whoosh = os.path.join(tmp, "whoosh.wav")
+    ff("-f", "lavfi", "-i", "anoisesrc=d=0.45:c=pink:a=0.9",
+       "-af", "bandpass=f=1800:width_type=o:w=2,afade=t=in:d=0.25,afade=t=out:st=0.25:d=0.2,volume=0.7", whoosh)
+    entrees = ["-i", voix, "-i", musique]
+    filt = ["[0:a]aformat=channel_layouts=stereo,volume=1.0[v]",
+            "[1:a]aformat=channel_layouts=stereo[mu]"]
+    noms = ["[v]", "[mu]"]
+    for k, tc in enumerate(coupes):
+        entrees += ["-i", whoosh]
+        ms = max(int((tc - 0.2) * 1000), 0)
+        filt.append(f"[{k + 2}:a]aformat=channel_layouts=stereo,adelay={ms}|{ms}[w{k}]")
+        noms.append(f"[w{k}]")
+    filt.append("".join(noms) + f"amix=inputs={len(noms)}:normalize=0:duration=first,alimiter=limit=0.95[a]")
+    out = os.path.join(tmp, "audio.m4a")
+    ff(*entrees, "-filter_complex", ";".join(filt), "-map", "[a]", "-t", f"{total:.3f}",
+       "-c:a", "aac", "-b:a", "192k", out)
+    return out
+
+
+# ---------------------------------------------------------------- assemblage
 def rendre(script_path, voix, clips_dir, sortie):
     s = json.load(open(script_path, encoding="utf-8"))
     long_format = s.get("format") == "long"
@@ -145,68 +285,48 @@ def rendre(script_path, voix, clips_dir, sortie):
     voix, sortie = os.path.abspath(voix), os.path.abspath(sortie)
     clips_dir = os.path.abspath(clips_dir) if clips_dir else None
     total = duree(voix)
+    c = charte()
+    segs = s.get("segments") or []
+    texte = " ".join(g["texte"] for g in segs) if segs else s["texte"]
+    mots = mots_du_script(texte)
+    al_path = os.path.splitext(voix)[0] + ".json"
+    alignement = json.load(open(al_path, encoding="utf-8")) if os.path.exists(al_path) else None
+    tms = timings(mots, total, alignement)
+    # bornes temporelles de chaque segment (info)
+    bornes, i = [], 0
+    for g in (segs or [{"texte": texte}]):
+        n = len(g["texte"].split())
+        a = tms[i][0] if i < len(tms) else total
+        i += n
+        bornes.append([a, None])
+    for k in range(len(bornes)):
+        bornes[k][1] = bornes[k + 1][0] if k + 1 < len(bornes) else total
+    if bornes:
+        bornes[0][0] = 0.0
+    coupes = [b[0] for b in bornes[1:]]
     with tempfile.TemporaryDirectory() as tmp:
-        sub = os.path.join(tmp, "subs.ass")
-        c = charte()
-        if s.get("segments") and not s.get("texte"):
-            s["texte"] = " ".join(g["texte"] for g in s["segments"])
-        ass(morceaux(s["texte"], 6 if long_format else 4), total, sub, long_format, c)
-        etiqs = c.get("etiquettes", {})
-        y_etiq = int(H * (0.20 if long_format else 0.24))
-        with open(sub, "a", encoding="utf-8") as f:
-            segs = s.get("segments") or []
-            if segs:
-                # "Le Flash du jour" : infos numérotées 1/3, 2/3... avec étiquette de source
-                poids = [max(len(g["texte"]), 1) for g in segs]
-                somme, t0 = sum(poids), 0.0
-                for k, (g, pd) in enumerate(zip(segs, poids)):
-                    t1 = t0 + total * pd / somme
-                    f.write(f"Dialogue: 2,{ts(t0)},{ts(t1)},Compteur,,0,0,0,,"
-                            f"{{\\pos({W - 60},{y_etiq})\\fad(80,0)}}{k + 1}/{len(segs)}\n")
-                    e = (g.get("etiquette") or "").upper()
-                    if e in etiqs:
-                        f.write(f"Dialogue: 2,{ts(t0)},{ts(t1)},Etiquette,,0,0,0,,"
-                                f"{{\\pos(60,{y_etiq})\\3c{ass_col(etiqs[e]['fond'])}&"
-                                f"\\1c{ass_col(etiqs[e]['texte'])}&\\fad(80,0)}}{e}\n")
-                    t0 = t1
-            else:
-                e = (s.get("etiquette") or "").upper()
-                if e in etiqs:
-                    f.write(f"Dialogue: 2,{ts(0)},{ts(total)},Etiquette,,0,0,0,,"
-                            f"{{\\pos(60,{y_etiq})\\3c{ass_col(etiqs[e]['fond'])}&"
-                            f"\\1c{ass_col(etiqs[e]['texte'])}&}}{e}\n")
-        fonts_src = os.path.join(MARQUE, "fonts")
-        if os.path.isdir(fonts_src):
-            import shutil
-            shutil.copytree(fonts_src, os.path.join(tmp, "fonts"))
-        hook = s.get("hook", "").upper().replace("\\", "")
-        if hook:
-            with open(sub, "a", encoding="utf-8") as f:
-                f.write(f"Dialogue: 1,{ts(0)},{ts(min(3.0, total))},Hook,,0,0,0,,{hook}\n")
-        bg = fond(clips_dir, total, tmp)
+        ecrire_ass(os.path.join(tmp, "subs.ass"), s, mots, tms, bornes, total, c, long_format)
+        if os.path.isdir(os.path.join(MARQUE, "fonts")):
+            shutil.copytree(os.path.join(MARQUE, "fonts"), os.path.join(tmp, "fonts"))
+        bg = fond(clips_dir, total, tmp, coupes, c, graine=hash(s.get("titre", "")) & 0xffff)
+        audio = bande_son(voix, total, coupes, tmp)
         fd = ":fontsdir=fonts" if os.path.isdir(os.path.join(tmp, "fonts")) else ""
         logo = os.path.join(MARQUE, c.get("logo", "logo.png"))
+        lw = int(c.get("logo_largeur", 220) * (0.75 if not long_format else 0.6))
         if os.path.exists(logo):
-            lw = c.get("logo_largeur", 180)
-            logo_in = ["-i", logo]
-            filtre = (f"[2:v]scale={lw}:-1,format=rgba,colorchannelmixer=aa=0.85[lg];"
-                      f"[0:v][lg]overlay=W-w-40:40[b];[b]ass=subs.ass{fd}[v]")
+            entrees = ["-i", bg, "-i", audio, "-i", logo]
+            filtre = (f"[2:v]scale={lw}:-1,format=rgba,colorchannelmixer=aa=0.9[lg];"
+                      f"[0:v][lg]overlay=(W-w)/2:40[b];[b]ass=subs.ass{fd}[v]")
         else:
-            logo_in = []
+            entrees = ["-i", bg, "-i", audio]
             filtre = f"[0:v]ass=subs.ass{fd}[v]"
-        subprocess.check_call([
-            "ffmpeg", "-y", "-v", "error", "-i", bg, "-i", voix, *logo_in,
-            "-filter_complex", filtre, "-map", "[v]", "-map", "1:a",
-            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-            "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", sortie], cwd=tmp)
+        ff(*entrees, "-filter_complex", filtre, "-map", "[v]", "-map", "1:a",
+           "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
+           "-c:a", "copy", "-shortest", "-movflags", "+faststart", sortie, cwd=tmp)
     print("OK ->", sortie)
 
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) != 5:
         print(__doc__); sys.exit(1)
     rendre(*sys.argv[1:])
-
-
-if __name__ == "__main__":
-    main()

@@ -31,18 +31,32 @@ def charger_env():
 
 
 def voix_off(texte, sortie, env):
+    """Voix ElevenLabs + horodatage mot par mot (voix/NNN.json) pour caler les sous-titres."""
+    import base64
     cle = env.get("ELEVENLABS_API_KEY")
     if not cle:
-        sys.exit("ELEVENLABS_API_KEY manquante dans .env")
+        sys.exit("ELEVENLABS_API_KEY manquante")
     voice = env.get("ELEVENLABS_VOICE_ID", "3Tp5mYhT9wrfnry9pzvV")  # Hugo
     model = env.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")
-    req = urllib.request.Request(
-        f"https://api.elevenlabs.io/v1/text-to-speech/{voice}?output_format=mp3_44100_128",
-        data=json.dumps({"text": texte, "model_id": model,
-                         "voice_settings": {"stability": 0.45, "similarity_boost": 0.8,
-                                            "style": 0.3}}).encode(),
-        headers={"xi-api-key": cle, "Content-Type": "application/json",
-                 "Accept": "audio/mpeg"})
+    corps = json.dumps({"text": texte, "model_id": model,
+                        "voice_settings": {"stability": 0.4, "similarity_boost": 0.8,
+                                           "style": 0.45, "speed": 1.08}}).encode()
+    entetes = {"xi-api-key": cle, "Content-Type": "application/json"}
+    base = f"https://api.elevenlabs.io/v1/text-to-speech/{voice}"
+    try:
+        req = urllib.request.Request(base + "/with-timestamps?output_format=mp3_44100_128",
+                                     data=corps, headers=entetes)
+        with urllib.request.urlopen(req, timeout=300) as r:
+            rep = json.loads(r.read())
+        open(sortie, "wb").write(base64.b64decode(rep["audio_base64"]))
+        al = rep.get("alignment") or rep.get("normalized_alignment")
+        if al:
+            json.dump(al, open(os.path.splitext(sortie)[0] + ".json", "w", encoding="utf-8"))
+        return
+    except Exception as e:  # repli : voix sans horodatage
+        print("Horodatage indisponible, voix simple :", e)
+    req = urllib.request.Request(base + "?output_format=mp3_44100_128", data=corps,
+                                 headers={**entetes, "Accept": "audio/mpeg"})
     with urllib.request.urlopen(req, timeout=300) as r, open(sortie, "wb") as f:
         f.write(r.read())
 
@@ -66,7 +80,7 @@ def main():
         mp3 = d("voix", f"{i}.mp3")
         if not os.path.exists(mp3):
             print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env)
-        clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script
+        clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script (images + vidéos)
         print(f"[{i}] montage ({s.get('format', 'short')})…")
         make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
         if env.get("AUTO_UPLOAD") == "1" and os.path.exists(d("client_secret.json")):

@@ -1,0 +1,40 @@
+name: Le Flash - aperçu (sans publication)
+
+on:
+  push:
+    paths: ["apercu.txt"]       # contient le numéro du script à prévisualiser, ex. 001
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  apercu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Outils
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Rendu de l'aperçu (voix + montage, pas d'envoi YouTube)
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+        run: |
+          ID=$(tr -d ' \r\n' < apercu.txt)
+          mkdir -p apercu/scripts
+          cp scripts/$ID.json apercu/scripts/$ID.json 2>/dev/null || cp scripts/apercu-$ID.json apercu/scripts/$ID.json
+          cp -r make_short.py pipeline.py marque apercu/
+          [ -d clips ] && cp -r clips apercu/ || true
+          cd apercu && AUTO_UPLOAD=0 python pipeline.py $ID
+      - name: Publier l'aperçu sur la branche apercus
+        run: |
+          ID=$(tr -d ' \r\n' < apercu.txt)
+          mkdir -p /tmp/out && cp apercu/sorties/$ID.mp4 /tmp/out/apercu-$ID.mp4
+          git config user.name "le-flash-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout --orphan apercus
+          git rm -rq --cached . && git clean -fdq -e apercu
+          cp /tmp/out/apercu-$ID.mp4 .
+          git add apercu-$ID.mp4
+          git commit -qm "Aperçu $ID"
+          git push -f origin apercus
