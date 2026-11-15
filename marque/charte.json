@@ -1,0 +1,35 @@
+{
+  "nom_chaine": "Le Flash",
+  "police": "Anton",
+  "police_bandeau": "Bebas Neue",
+  "couleur_fond": "#070b1a",
+  "couleur_texte": "#ffffff",
+  "couleur_contour": "#000000",
+  "couleur_mot_cle": "#1f6bff",
+  "couleur_hook_fond": "#ff2d3d",
+  "couleur_hook_texte": "#ffffff",
+  "logo": "logo.png",
+  "logo_largeur": 300,
+  "etiquettes": {
+    "OFFICIEL": {
+      "fond": "#ffffff",
+      "texte": "#070b1a"
+    },
+    "RUMEUR": {
+      "fond": "#1f6bff",
+      "texte": "#ffffff"
+    },
+    "LEAK": {
+      "fond": "#ff2d3d",
+      "texte": "#ffffff"
+    }
+  },
+  "lien_chaine": "https://www.youtube.com/@leflashfr",
+  "id_chaine": "UCfq8svwPGsQVU2it5c9GPiQ",
+  "pied_description": "🔴 Le Flash : toute l'actu GTA 6 en français, chaque jour.\nAbonne-toi pour ton Flash de demain : https://www.youtube.com/@leflashfr\n\nÉtiquettes : OFFICIEL = annonce Rockstar / Take-Two. RUMEUR et LEAK = non confirmé, à prendre avec prudence.\n\nChaîne de fans non affiliée à Rockstar Games ni à Take-Two Interactive.\n\n#GTA6 #GTAVI #LeFlash",
+  "playlists": {
+    "flash_du_jour": "PLM_3F7KMlhOo",
+    "recap": "PLZpoQvcuEgUY",
+    "decryptage": "PLIhQXuvE7bmk"
+  }
+}

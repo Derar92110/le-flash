@@ -1,0 +1,5 @@
+{"format":"short","titre":"t","hook":"FLASH GTA 6 · J-5",
+ "segments":[
+  {"texte":"Un : Rockstar a confirmé la date du *19 novembre*.","etiquette":"OFFICIEL"},
+  {"texte":"Deux : une rumeur parle d'un *mode photo* au lancement.","etiquette":"RUMEUR"},
+  {"texte":"Trois : des images auraient fuité sur les réseaux.","etiquette":"LEAK"}]}

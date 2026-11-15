@@ -1,0 +1,8 @@
+# Copie ce fichier en ".env" et remplis-le toi-même (ne le partage jamais).
+# Clé API : elevenlabs.io > Developers > API Keys > Create (droit Text to Speech suffit)
+ELEVENLABS_API_KEY=
+# Voix "Hugo – Punchy French Creator"
+ELEVENLABS_VOICE_ID=3Tp5mYhT9wrfnry9pzvV
+ELEVENLABS_MODEL=eleven_multilingual_v2
+# 1 = envoie automatiquement sur YouTube (en privé) si client_secret.json est présent
+AUTO_UPLOAD=1
