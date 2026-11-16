@@ -1,0 +1,32 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 3 infos à J-3 #shorts",
+  "hook": "FLASH GTA 6 · J-3",
+  "segments": [
+    {
+      "texte": "GTA 6 sort dans trois jours. Voici les trois infos du jour.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Durée de vie",
+      "texte": "Un : l'histoire principale durerait environ *50 heures*, et le platine plus de *200 heures*.",
+      "etiquette": "LEAK"
+    },
+    {
+      "titre": "Boîtes sans code",
+      "texte": "Deux : des joueurs reçoivent des boîtes au code *déjà utilisé*. Sans disque, impossible d'installer.",
+      "etiquette": "RUMEUR"
+    },
+    {
+      "titre": "Madden supplie",
+      "texte": "Trois : EA demande aux joueurs de *ne pas supprimer* Madden pour faire de la place. Abonne-toi pour ton Flash de demain !",
+      "etiquette": "OFFICIEL"
+    }
+  ],
+  "description": "Le Flash GTA 6 du 16 novembre, J-3 avant la sortie.\n\n1. Durée de vie : environ 50 h pour l'histoire, plus de 200 h pour le platine (fuite rapportée par Insider Gaming, non confirmée par Rockstar).\n2. Des exemplaires physiques arriveraient avec un code déjà utilisé, sans disque de secours (témoignages de joueurs, Rockstar n'a pas réagi).\n3. EA demande aux joueurs de Madden NFL 27 de ne pas supprimer le jeu pour libérer les 212 Go de GTA 6.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "actu GTA 6", "Leonida"],
+  "sources": [
+    "https://www.notebookcheck.net/Leak-says-GTA-6-story-takes-50-hours-to-complete-and-PS5-platinum-trophy-200-hours.1450952.0.html",
+    "https://vgtimes.com/games/gta-6/news/"
+  ]
+}
