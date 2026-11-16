@@ -84,7 +84,7 @@ def main():
         print(f"[{i}] montage ({s.get('format', 'short')})…")
         make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
         if env.get("AUTO_UPLOAD") == "1" and os.path.exists(d("client_secret.json")):
-            print(f"[{i}] envoi YouTube (privé)…")
+            print(f"[{i}] envoi YouTube…")
             subprocess.check_call([sys.executable, d("upload_youtube.py"), video,
                                    d("scripts", f"{i}.json"), "--id-file", d("publies", f"{i}.txt"),
                                    "--visibilite", env.get("PUBLICATION", "public")])
