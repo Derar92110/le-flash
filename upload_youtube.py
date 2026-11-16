@@ -15,7 +15,7 @@ Par défaut la vidéo part en "privé" (tu vérifies puis tu passes en public),
 ou programmée si --publier-a est donné.
 Quota gratuit : ~6 uploads par jour (10 000 unités, 1 600 par upload).
 """
-import argparse, json, os
+import argparse, json, os, re
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
@@ -59,11 +59,22 @@ def main():
         desc += "\n\n" + open(cr, encoding="utf-8").read().strip()
     if c.get("pied_description"):
         desc += "\n\n" + c["pied_description"]
+    # hashtags (idée de Medley 16/11) : 3 fixes + 1-2 du sujet (champ "hashtags" du script), max 5.
+    # YouTube affiche les 3 premiers au-dessus du titre : on les met en tête de description.
+    vus, tags_h = set(), []
+    for h in ["#GTA6", "#GTAVI", "#Shorts"] + s.get("hashtags", []) + ["#LeFlash"]:
+        h = "#" + re.sub(r"[^\w]", "", h.lstrip("#"))
+        if len(h) > 1 and h.lower() not in vus:
+            vus.add(h.lower()); tags_h.append(h)
+    desc = " ".join(tags_h[:5]) + "\n\n" + desc
+    titre = s["titre"]
+    if "#gta6" not in titre.lower() and len(titre) + 7 <= 100:
+        titre = re.sub(r"\s*(#shorts)?\s*$", lambda m: " #GTA6" + (" " + m.group(1) if m.group(1) else ""), titre, count=1, flags=re.I)
     status = {"privacyStatus": a.visibilite, "selfDeclaredMadeForKids": False,
               "containsSyntheticMedia": False}  # retiré à la demande de Medley le 15/11 (voix off de narration)
     if a.publier_a:
         status["publishAt"] = a.publier_a
-    body = {"snippet": {"title": s["titre"][:100], "description": desc[:4900],
+    body = {"snippet": {"title": titre[:100], "description": desc[:4900],
                         "tags": s.get("tags", []), "categoryId": "20", "defaultLanguage": "fr-FR",
                         "defaultAudioLanguage": "fr-FR"},
             "status": status}
