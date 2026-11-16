@@ -1,0 +1,34 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : les infos du soir à J-3 #shorts",
+  "hook": "FLASH DU SOIR · J-3",
+  "segments": [
+    {
+      "texte": "Édition du soir. GTA 6 sort dans trois jours, voici ce qu'il faut savoir.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Nouvelle mise à jour",
+      "texte": "Un : une deuxième mise à jour est arrivée aujourd'hui. *600 mégas* sur PS5, lance-la avant jeudi.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Minuit confirmé",
+      "texte": "Deux : Rockstar confirme le déblocage à *minuit*, heure locale. En France, mercredi soir à minuit pile.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Le hacker coupable",
+      "texte": "Trois : le hacker de la fuite de 2022 a plaidé *coupable* à Londres. Abonne-toi pour ton Flash de demain matin !",
+      "etiquette": ""
+    }
+  ],
+  "description": "Le Flash du soir, 16 novembre, J-3 avant la sortie de GTA 6.\n\n1. Deuxième mise à jour avant la sortie : environ 600 Mo sur PS5 et 1,6 Go sur Xbox Series. Rockstar n'a pas publié de notes de patch.\n2. Déblocage à minuit heure locale selon Rockstar : en France, dans la nuit du mercredi 18 au jeudi 19 novembre.\n3. Arion Kurtaj, auteur du piratage de Rockstar et de la fuite des vidéos de GTA 6 en 2022, a plaidé coupable devant la Woolwich Crown Court de Londres. La peine sera fixée plus tard.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "actu GTA 6", "mise à jour GTA 6", "heure de sortie GTA 6"],
+  "hashtags": ["#PS5", "#Rockstar"],
+  "sources": [
+    "Beebom, 16/11/2026 : https://beebom.com/gta-6-gets-second-pre-launch-update/",
+    "Forbes, 16/11/2026 : https://www.forbes.com/sites/erikkain/2026/11/16/gta-6-release-date-time-ps5-xbox-series-x-download-size-day-one-update/",
+    "Kotaku, 16/11/2026 : https://kotaku.com/grand-theft-auto-6-leak-gta6-hacker-pleads-guilty-2000757500"
+  ]
+}
