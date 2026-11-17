@@ -1,0 +1,33 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : les infos du soir à J-2 #shorts",
+  "hook": "FLASH DU SOIR · J-2",
+  "segments": [
+    {
+      "texte": "Édition du soir. GTA 6 sort dans deux jours, voici ce qu'il faut savoir.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Nouvelle-Zélande",
+      "texte": "Un : la Nouvelle-Zélande joue en premier. Là-bas, minuit tombe mercredi à *midi*, heure de Paris.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "GTA dans NBA 2K",
+      "texte": "Deux : NBA 2K27 lance un événement *GTA 6* à partir du 27 novembre.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "2 milliards",
+      "texte": "Trois : un analyste prévoit plus de *2 milliards* de dollars dès le premier week-end. Abonne-toi pour ton Flash de demain matin !",
+      "etiquette": "RUMEUR"
+    }
+  ],
+  "description": "Le Flash du soir, 17 novembre, J-2 avant la sortie de GTA 6.\n\n1. Sortie à minuit heure locale, région par région : la Nouvelle-Zélande débloque en premier, ce qui correspond à mercredi 18 novembre midi, heure de Paris. En France, c'est à minuit dans la nuit de mercredi à jeudi.\n2. NBA 2K27 (édité par 2K, filiale de Take-Two) aura un événement crossover GTA 6 à partir du 27 novembre.\n3. L'analyste Joost van Dreunen prévoit plus de 2 milliards de dollars de revenus pour Take-Two dès le premier week-end. C'est une prévision, pas un chiffre officiel.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "actu GTA 6", "heure de sortie GTA 6", "NBA 2K27"],
+  "hashtags": ["#NBA2K27", "#Rockstar"],
+  "sources": [
+    "Push Square, heures de sortie par région : https://www.pushsquare.com/guides/gta-6-release-times-when-can-you-start-playing",
+    "VGTimes, 17/11/2026 (NBA 2K27, prévision Joost van Dreunen) : https://vgtimes.com/games/gta-6/news/"
+  ]
+}
