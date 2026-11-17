@@ -1,0 +1,33 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 3 infos à J-2 #shorts",
+  "hook": "FLASH GTA 6 · J-2",
+  "segments": [
+    {
+      "texte": "GTA 6 sort dans deux jours. Voici les trois infos du jour.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Game Awards",
+      "texte": "Un : les nominations des Game Awards tombent ce soir à *18 heures*. GTA 6 est éligible, à un jour près.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Déjà un record",
+      "texte": "Deux : selon Sensor Tower, le jeu aurait déjà rapporté *1,45 milliard* de dollars en précommandes.",
+      "etiquette": "RUMEUR"
+    },
+    {
+      "titre": "Discord Vice City",
+      "texte": "Trois : Discord offre un thème *Vice City* gratuit, pour une durée limitée. Abonne-toi pour ton Flash de demain !",
+      "etiquette": "OFFICIEL"
+    }
+  ],
+  "description": "Le Flash GTA 6 du 17 novembre, J-2 avant la sortie.\n\n1. Les nominations des Game Awards 2026 sont annoncées ce mardi 17 novembre à 18h (heure de Paris). GTA 6, qui sort le 19, est éligible : la limite est le 20 novembre.\n2. Sensor Tower estime que GTA 6 aurait déjà rapporté 1,45 milliard de dollars (environ 14,9 millions d'exemplaires) sur PlayStation et Xbox au 16 novembre. C'est une estimation, pas un chiffre officiel.\n3. Discord et Rockstar proposent un thème Vice City gratuit pour l'application, pendant une durée limitée.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "actu GTA 6", "Game Awards 2026", "GTA 6 ventes"],
+  "hashtags": ["#TheGameAwards", "#ViceCity"],
+  "sources": [
+    "Timesaver.gg, nominations Game Awards le 17/11 à 12h ET : https://timesaver.gg/blog/gta-6-game-awards",
+    "VGTimes, 16/11/2026 (estimation Sensor Tower) et 17/11/2026 (thème Discord) : https://vgtimes.com/games/gta-6/news/"
+  ]
+}
