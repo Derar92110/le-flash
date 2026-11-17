@@ -48,6 +48,9 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           AUTO_UPLOAD: "1"
+          META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
           PUBLICATION: ${{ vars.PUBLICATION || 'public' }}
         run: |
           python pipeline.py
