@@ -27,7 +27,8 @@ Les chiffres cités (20 000 €/mois, 2 M€, etc.) sont des exemples choisis pa
 | Images de jeu | **Tes propres captures** console (bouton Share/Capture) | Non : à toi, dès le 19 nov. |
 | Montage vertical + sous-titres | `make_short.py` (ffmpeg) | Oui |
 | Publication YouTube | `upload_youtube.py` (API officielle) | Oui après 10 min de config |
-| Publication TikTok / Insta | Planificateur natif ou Metricool | Semi |
+| Publication Instagram + Facebook Reels | `upload_meta.py` (API Graph Meta, voir `docs/guide-instagram-facebook.md`) | Oui après 20 min de config |
+| Publication TikTok | Brouillons TikTok (la publication publique par API exige un audit TikTok) | Semi |
 
 **Important images :** n'utilise pas les trailers de Rockstar en boucle (Content ID, démonétisation). Tes propres captures de gameplay sont la voie sûre. Avant le 19 nov., le fond néon animé du script suffit pour des Shorts « infos ».
 
