@@ -88,6 +88,12 @@ def main():
             subprocess.check_call([sys.executable, d("upload_youtube.py"), video,
                                    d("scripts", f"{i}.json"), "--id-file", d("publies", f"{i}.txt"),
                                    "--visibilite", env.get("PUBLICATION", "public")])
+        if env.get("AUTO_UPLOAD") == "1" and env.get("META_PAGE_TOKEN"):
+            print(f"[{i}] envoi Instagram + Facebook…")
+            # un échec Meta ne bloque pas la production YouTube : on le signale seulement
+            if subprocess.call([sys.executable, d("upload_meta.py"), video, d("scripts", f"{i}.json"),
+                                "--marque", d("publies", i)], env=env):
+                print(f"[{i}] ATTENTION : envoi Instagram/Facebook incomplet (voir ci-dessus)")
     print("Terminé.")
 
 
