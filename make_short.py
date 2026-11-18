@@ -499,7 +499,7 @@ def rendre(script_path, voix, clips_dir, sortie):
         if not brut:
             bg = fond(clips_dir, total, tmp, coupes, c, graine=graine)
         musique = choisir_musique(graine)
-        audio = (bande_son(voix, total, [], tmp, musique, graine, vol_musique=0.10, gain_voix=1.8) if brut
+        audio = (bande_son(voix, total, [], tmp, musique, graine, vol_musique=0.10, gain_voix=2.1) if brut
                  else bande_son(voix, total, coupes, tmp, musique, graine))
         credit = sortie + ".credit.txt"
         if musique:
