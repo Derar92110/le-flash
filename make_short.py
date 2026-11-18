@@ -419,13 +419,13 @@ def choisir_musique(graine):
     return os.path.join(d, pistes[graine % len(pistes)]) if pistes else None
 
 
-def bande_son(voix, total, coupes, tmp, musique=None, graine=0):
+def bande_son(voix, total, coupes, tmp, musique=None, graine=0, vol_musique=0.22, gain_voix=1.0):
     """Voix + musique libre de droits discrète (baissée sous la voix) + whoosh aux coupes."""
     whoosh = os.path.join(tmp, "whoosh.wav")
     ff("-f", "lavfi", "-i", "anoisesrc=d=0.45:c=pink:a=0.9",
        "-af", "bandpass=f=1800:width_type=o:w=2,afade=t=in:d=0.25,afade=t=out:st=0.25:d=0.2,volume=0.6", whoosh)
     entrees = ["-i", voix]
-    filt = ["[0:a]aformat=channel_layouts=stereo,asplit=2[v][vsc]"]
+    filt = [f"[0:a]aformat=channel_layouts=stereo,volume={gain_voix},asplit=2[v][vsc]"]
     noms = ["[v]"]
     k0 = 1
     if musique:
@@ -435,13 +435,13 @@ def bande_son(voix, total, coupes, tmp, musique=None, graine=0):
         except Exception:
             pass
         entrees += ["-ss", f"{debut:.1f}", "-i", musique]
-        filt.append(f"[1:a]aformat=channel_layouts=stereo,volume=0.22,afade=t=in:d=0.6,"
+        filt.append(f"[1:a]aformat=channel_layouts=stereo,volume={vol_musique},afade=t=in:d=0.6,"
                     f"afade=t=out:st={max(total - 1.2, 0):.2f}:d=1.2[mu0]")
         filt.append("[mu0][vsc]sidechaincompress=threshold=0.04:ratio=6:attack=20:release=300[mu]")
         noms.append("[mu]")
         k0 = 2
     else:
-        filt[0] = "[0:a]aformat=channel_layouts=stereo[v]"
+        filt[0] = f"[0:a]aformat=channel_layouts=stereo,volume={gain_voix}[v]"
     for k, tc in enumerate(coupes):
         entrees += ["-i", whoosh]
         ms = max(int((tc - 0.2) * 1000), 0)
@@ -499,7 +499,8 @@ def rendre(script_path, voix, clips_dir, sortie):
         if not brut:
             bg = fond(clips_dir, total, tmp, coupes, c, graine=graine)
         musique = choisir_musique(graine)
-        audio = bande_son(voix, total, [] if brut else coupes, tmp, musique, graine)
+        audio = (bande_son(voix, total, [], tmp, musique, graine, vol_musique=0.10, gain_voix=1.8) if brut
+                 else bande_son(voix, total, coupes, tmp, musique, graine))
         credit = sortie + ".credit.txt"
         if musique:
             titre = os.path.splitext(os.path.basename(musique))[0]

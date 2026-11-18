@@ -30,8 +30,8 @@ jobs:
       - name: Rendu de l'aperçu (voix + montage, pas d'envoi YouTube)
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          STYLE: brut                                  # aperçu du nouveau style (18/11)
-          ELEVENLABS_VOICE_ID: SptHT9PQ49isQvxFm28t    # Agathe, voix féminine « réseaux sociaux »
+          STYLE: brut                                  # style validé par Medley le 18/11
+          ELEVENLABS_VOICE_ID: NpMqpbmlioUVh6og0U5p    # Hélène, voix féminine dynamique
         run: |
           ID=$(tr -d ' \r\n' < apercu.txt)
           mkdir -p apercu/scripts

@@ -32,7 +32,8 @@ jobs:
           path: |
             clips/gta6
             musique
-          key: ressources-${{ hashFiles('ressources.py') }}
+            videos
+          key: ressources-v2-${{ hashFiles('ressources.py') }}
       - name: Images GTA 6 officielles + musiques libres de droits
         run: python ressources.py
 
@@ -47,6 +48,8 @@ jobs:
       - name: Voix + montage + envoi
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          STYLE: brut                                  # style validé par Medley le 18/11
+          ELEVENLABS_VOICE_ID: NpMqpbmlioUVh6og0U5p    # Hélène, voix féminine dynamique
           AUTO_UPLOAD: "1"
           PUBLICATION: ${{ vars.PUBLICATION || 'public' }}
         run: |
