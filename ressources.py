@@ -2,6 +2,8 @@
 """Télécharge (avec cache) les ressources de fond, pendant le run GitHub Actions :
   - clips/gta6/ : captures officielles GTA 6 publiées par Rockstar sur rockstargames.com/VI
   - musique/    : musiques libres de droits de Kevin MacLeod (incompetech.com, licence CC BY 4.0)
+  - videos/trailers/ : trailers officiels Rockstar (YouTube), IMAGE SEULE, sans la bande-son
+                      (la musique des trailers déclencherait Content ID)
 Rien n'est versionné dans le dépôt (voir .gitignore)."""
 import os, re, urllib.request
 
@@ -43,6 +45,26 @@ def images(dossier, maxi=80):
     print(f"Captures GTA 6 : {len(os.listdir(dossier))} en cache ({n} nouvelles)")
 
 
+TRAILERS = {"trailer1": "QdBZY2fkU-0", "trailer2": "VQRLujxTm3c", "lancement": "rz1B4B2yBZY"}
+
+
+def trailers(dossier):
+    """Trailers officiels en vidéo seule (yt-dlp). Un échec n'arrête pas la production."""
+    import subprocess
+    os.makedirs(dossier, exist_ok=True)
+    for nom, vid in TRAILERS.items():
+        f = os.path.join(dossier, nom + ".mp4")
+        if os.path.exists(f):
+            continue
+        try:
+            subprocess.run(["yt-dlp", "-q", "--no-warnings", "-f",
+                            "bv*[height<=1080][ext=mp4]/bv*[height<=1080]", "--remux-video", "mp4",
+                            "-o", f, "https://www.youtube.com/watch?v=" + vid], check=True, timeout=900)
+        except Exception as e:
+            print("trailer ignoré", nom, e)
+    print("Trailers :", len([x for x in os.listdir(dossier) if x.endswith(".mp4")]))
+
+
 def musiques(dossier):
     os.makedirs(dossier, exist_ok=True)
     for t in MUSIQUES:
@@ -59,3 +81,4 @@ def musiques(dossier):
 if __name__ == "__main__":
     images(os.path.join(ICI, "clips", "gta6"))
     musiques(os.path.join(ICI, "musique"))
+    trailers(os.path.join(ICI, "videos", "trailers"))

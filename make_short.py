@@ -296,6 +296,98 @@ def fond(clips_dir, total, tmp, coupes, c, graine=0):
     return out
 
 
+
+# ---------------------------------------------------------------- style « brut » (16/11/2026, demande de Medley)
+# Extraits vidéo des trailers Rockstar plein écran, coupes franches, sous-titres blancs
+# sans bloc de couleur, petites mentions (édition, étiquette, crédit des images).
+VIDEOS = os.path.join(ICI, "videos")
+ROUGE_POINT = {"OFFICIEL": "&H00FFFFFF", "RUMEUR": "&H003D2DFF", "LEAK": "&H0000C8FF"}
+
+
+def style_actif(s, c):
+    return (s.get("style") or os.environ.get("STYLE") or c.get("style") or "v5").lower()
+
+
+def ecrire_ass_brut(path, s, mots, tms, bornes_segments, total, c):
+    blanc, noir = "&H00FFFFFF", "&H00000000"
+    y_sub = int(H * 0.56)
+    L = []
+    for g in groupes(mots, 7, 30):
+        a = tms[g[0]][0]; b = tms[g[-1]][1]
+        suiv = [tms[i][0] for i in range(g[-1] + 1, len(mots))]
+        b = max(b, min(suiv[0], b + 0.4) if suiv else total)
+        txt = [mots[j][0].replace("\\", "").replace("{", "(").replace("}", ")") for j in g]
+        lg = [len(x) for x in txt]
+        coupe = None
+        if sum(lg) + len(g) > 22 and len(g) > 1:  # 2 lignes équilibrées
+            coupe = min(range(len(g) - 1), key=lambda k: max(sum(lg[:k + 1]) + k, sum(lg[k + 1:]) + len(g) - k - 2))
+        ligne = "".join(x + ("\\N" if k == coupe else " ") for k, x in enumerate(txt)).strip()
+        L.append(f"Dialogue: 5,{ts(a)},{ts(b)},Sous,,0,0,0,,{{\\an5\\pos({W // 2},{y_sub})\\fad(60,0)}}{ligne}")
+    # mentions discrètes en haut à gauche : édition (hook) puis étiquette de l'info
+    hook = (s.get("hook") or "").replace("{", "(").replace("}", ")")
+    if hook:
+        L.append(f"Dialogue: 4,{ts(0)},{ts(total)},Mention,,0,0,0,,{{\\an7\\pos(56,118)}}{hook}")
+    for g, (t0, t1) in zip(s.get("segments") or [], bornes_segments):
+        e = (g.get("etiquette") or "").upper()
+        if e in ROUGE_POINT:
+            L.append(f"Dialogue: 4,{ts(t0)},{ts(t1)},Mention,,0,0,0,,{{\\an7\\pos(56,178)\\fad(120,0)}}"
+                     f"{{\\1c{ROUGE_POINT[e]}}}●{{\\1c{blanc}}} {e}")
+    credit = s.get("credit_images") or c.get("credit_images") or "Images : Rockstar Games"
+    L.append(f"Dialogue: 4,{ts(0)},{ts(total)},Credit,,0,0,0,,{{\\an1\\pos(56,{int(H * 0.79)})}}{credit}")
+    entete = f"""[Script Info]
+ScriptType: v4.00+
+PlayResX: {W}
+PlayResY: {H}
+WrapStyle: 1
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Sous,Poppins,74,{blanc},{blanc},&H64000000,&H8C000000,1,0,0,0,100,100,0,0,1,2,4,5,70,70,0,1
+Style: Mention,Poppins,40,{blanc},{blanc},&H64000000,&H8C000000,1,0,0,0,100,100,1,0,1,1.5,3,7,0,0,0,1
+Style: Credit,Poppins,30,&H33FFFFFF,&H33FFFFFF,&H64000000,&H8C000000,1,0,0,0,100,100,0,0,1,1,2,1,0,0,0,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(entete + "\n".join(L) + "\n")
+
+
+def fond_brut(total, tmp, coupes, graine=0):
+    """Extraits de trailers (sans leur son) recadrés en vertical, coupes franches de 1,6 à 2,6 s."""
+    vids = []
+    for racine, _, fichiers in os.walk(VIDEOS):
+        vids += [os.path.join(racine, x) for x in sorted(fichiers) if x.lower().endswith(VID)]
+    if not vids:
+        return None
+    rnd = random.Random(graine)
+    durees = {v: duree(v) for v in vids}
+    bornes, t = [0.0], 0.0
+    coupes = sorted(x for x in coupes if 0.5 < x < total - 0.5)
+    while t < total:
+        nxt = t + rnd.uniform(1.6, 2.6)
+        prochaines = [x for x in coupes if t + 0.8 < x <= nxt + 0.6]
+        t = prochaines[0] if prochaines else nxt
+        bornes.append(min(t, total))
+    bornes = [x for k, x in enumerate(bornes) if k == 0 or x - bornes[k - 1] > 0.4 or k == len(bornes) - 1]
+    liste = os.path.join(tmp, "plans.txt")
+    with open(liste, "w") as fl:
+        for i, (a, b) in enumerate(zip(bornes, bornes[1:])):
+            v = vids[i % len(vids)] if i < len(vids) else rnd.choice(vids)
+            dv = durees[v]
+            debut = rnd.uniform(min(6, dv * 0.1), max(dv - 8 - (b - a), 1))
+            p = os.path.join(tmp, f"b{i:03d}.mp4")
+            n = max(int(round((b - a) * 30)), 2)
+            z = rnd.choice([1.0, 1.0, 1.06])
+            ff("-ss", f"{debut:.2f}", "-i", v, "-an", "-vf",
+               f"fps=30,scale=-2:{int(H * z)},crop={W}:{H},setsar=1,"
+               "eq=brightness=-0.06:contrast=1.05:saturation=1.08,vignette=PI/5,format=yuv420p",
+               "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
+            fl.write(f"file '{p}'\n")
+    out = os.path.join(tmp, "fond.mp4")
+    ff("-f", "concat", "-safe", "0", "-i", liste, "-c", "copy", out)
+    return out
+
 # ---------------------------------------------------------------- audio
 def choisir_musique(graine):
     d = os.path.join(ICI, "musique")
@@ -369,13 +461,21 @@ def rendre(script_path, voix, clips_dir, sortie):
         bornes[0][0] = 0.0
     coupes = [b[0] for b in bornes[1:]]
     with tempfile.TemporaryDirectory() as tmp:
-        ecrire_ass(os.path.join(tmp, "subs.ass"), s, mots, tms, bornes, total, c, long_format)
+        graine = sum(map(ord, s.get("titre", "")))
+        brut = style_actif(s, c) == "brut" and not long_format
+        bg = fond_brut(total, tmp, coupes, graine) if brut else None
+        if brut and not bg:
+            print("(style brut : aucune vidéo dans videos/, retour au style v5)"); brut = False
+        if brut:
+            ecrire_ass_brut(os.path.join(tmp, "subs.ass"), s, mots, tms, bornes, total, c)
+        else:
+            ecrire_ass(os.path.join(tmp, "subs.ass"), s, mots, tms, bornes, total, c, long_format)
         if os.path.isdir(os.path.join(MARQUE, "fonts")):
             shutil.copytree(os.path.join(MARQUE, "fonts"), os.path.join(tmp, "fonts"))
-        bg = fond(clips_dir, total, tmp, coupes, c, graine=sum(map(ord, s.get("titre", ""))))
-        graine = sum(map(ord, s.get("titre", "")))
+        if not brut:
+            bg = fond(clips_dir, total, tmp, coupes, c, graine=graine)
         musique = choisir_musique(graine)
-        audio = bande_son(voix, total, coupes, tmp, musique, graine)
+        audio = bande_son(voix, total, [] if brut else coupes, tmp, musique, graine)
         credit = sortie + ".credit.txt"
         if musique:
             titre = os.path.splitext(os.path.basename(musique))[0]
@@ -386,11 +486,11 @@ def rendre(script_path, voix, clips_dir, sortie):
             os.remove(credit)
         fd = ":fontsdir=fonts" if os.path.isdir(os.path.join(tmp, "fonts")) else ""
         logo = os.path.join(MARQUE, c.get("logo", "logo.png"))
-        lw = int(c.get("logo_largeur", 220) * (0.75 if not long_format else 0.6))
+        lw = int(c.get("logo_largeur", 220) * (0.6 if brut else 0.75 if not long_format else 0.6))
         if os.path.exists(logo):
             entrees = ["-i", bg, "-i", audio, "-i", logo]
             filtre = (f"[2:v]scale={lw}:-1,format=rgba,colorchannelmixer=aa=0.9[lg];"
-                      f"[0:v][lg]overlay=(W-w)/2:40[b];[b]ass=subs.ass{fd}[v]")
+                      + (f"[0:v][lg]overlay=W-w-50:80[b];" if brut else f"[0:v][lg]overlay=(W-w)/2:40[b];") + f"[b]ass=subs.ass{fd}[v]")
         else:
             entrees = ["-i", bg, "-i", audio]
             filtre = f"[0:v]ass=subs.ass{fd}[v]"

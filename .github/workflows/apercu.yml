@@ -15,20 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Outils
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && pip install -q -U yt-dlp
       - name: Cache des images et musiques
         uses: actions/cache@v4
         with:
           path: |
             clips/gta6
             musique
-          key: ressources-${{ hashFiles('ressources.py') }}
+            videos
+          key: ressources-v2-${{ hashFiles('ressources.py') }}
       - name: Images GTA 6 officielles + musiques libres de droits
         run: python ressources.py
 
       - name: Rendu de l'aperçu (voix + montage, pas d'envoi YouTube)
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          STYLE: brut                                  # aperçu du nouveau style (18/11)
+          ELEVENLABS_VOICE_ID: SptHT9PQ49isQvxFm28t    # Agathe, voix féminine « réseaux sociaux »
         run: |
           ID=$(tr -d ' \r\n' < apercu.txt)
           mkdir -p apercu/scripts
@@ -36,6 +39,7 @@ jobs:
           cp -r make_short.py pipeline.py marque apercu/
           cp -r clips apercu/ 2>/dev/null || true
           cp -r musique apercu/ 2>/dev/null || true
+          cp -r videos apercu/ 2>/dev/null || true
           cd apercu && AUTO_UPLOAD=0 python pipeline.py $ID
       - name: Publier l'aperçu sur la branche apercus
         run: |
