@@ -19,7 +19,7 @@ MUSIQUES = ["Hitman", "Volatile Reaction", "Movement Proposition", "Neon Laser H
 
 
 def get(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60) as r:
+    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=300) as r:
         return r.read()
 
 
@@ -56,7 +56,13 @@ def trailers(dossier):
         f = os.path.join(dossier, nom + ".mp4")
         if os.path.exists(f):
             continue
-        try:
+        try:  # 1) copie déposée par le PC de Medley dans la release « ressources » du dépôt
+            open(f, "wb").write(get(f"https://github.com/Derar92110/le-flash/releases/download/ressources/{nom}.mp4"))
+            continue
+        except Exception as e:
+            if os.path.exists(f): os.remove(f)
+            print("release : pas de", nom, e)
+        try:  # 2) YouTube (souvent refusé depuis les serveurs GitHub)
             subprocess.run(["yt-dlp", "-q", "--no-warnings", "-f",
                             "bv*[height<=1080][ext=mp4]/bv*[height<=1080]", "--remux-video", "mp4",
                             "-o", f, "https://www.youtube.com/watch?v=" + vid], check=True, timeout=900)
