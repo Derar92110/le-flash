@@ -312,7 +312,11 @@ def ecrire_ass_brut(path, s, mots, tms, bornes_segments, total, c):
     blanc, noir = "&H00FFFFFF", "&H00000000"
     y_sub = int(H * 0.56)
     L = []
-    for g in groupes(mots, 7, 30):
+    gs = groupes(mots, 7, 30)
+    for k in range(len(gs) - 2, -1, -1):  # « Un : » seul -> collé à la suite
+        if len(gs[k]) == 1 and mots[gs[k][0]][0].endswith(":"):
+            gs[k:k + 2] = [gs[k] + gs[k + 1]]
+    for g in gs:
         a = tms[g[0]][0]; b = tms[g[-1]][1]
         suiv = [tms[i][0] for i in range(g[-1] + 1, len(mots))]
         b = max(b, min(suiv[0], b + 0.4) if suiv else total)
@@ -353,6 +357,25 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         f.write(entete + "\n".join(L) + "\n")
 
 
+def zone_utile(v, dv):
+    """Retire les bandes noires « cinéma » des trailers (cropdetect sur 3 passages)."""
+    hauteurs = []
+    for f in (0.3, 0.5, 0.7):
+        try:
+            err = subprocess.run(["ffmpeg", "-ss", f"{dv * f:.1f}", "-i", v, "-t", "2", "-vf",
+                                  "cropdetect=limit=24:round=2:reset=0", "-f", "null", "-"],
+                                 capture_output=True, text=True).stderr
+            m = re.findall(r"crop=(\d+):(\d+):(\d+):(\d+)", err)
+            if m:
+                hauteurs.append(tuple(map(int, m[-1])))
+        except Exception:
+            pass
+    if not hauteurs:
+        return ""
+    w, h, x, y = max(hauteurs, key=lambda c: c[1] * c[0])  # la zone la plus grande vue
+    return f"crop={w}:{h}:{x}:{y},"
+
+
 def fond_brut(total, tmp, coupes, graine=0):
     """Extraits de trailers (sans leur son) recadrés en vertical, coupes franches de 1,6 à 2,6 s."""
     vids = []
@@ -362,6 +385,7 @@ def fond_brut(total, tmp, coupes, graine=0):
         return None
     rnd = random.Random(graine)
     durees = {v: duree(v) for v in vids}
+    cadres = {v: zone_utile(v, durees[v]) for v in vids}
     bornes, t = [0.0], 0.0
     coupes = sorted(x for x in coupes if 0.5 < x < total - 0.5)
     while t < total:
@@ -380,7 +404,7 @@ def fond_brut(total, tmp, coupes, graine=0):
             n = max(int(round((b - a) * 30)), 2)
             z = rnd.choice([1.0, 1.0, 1.06])
             ff("-ss", f"{debut:.2f}", "-i", v, "-an", "-vf",
-               f"fps=30,scale=-2:{int(H * z)},crop={W}:{H},setsar=1,"
+               f"fps=30,{cadres[v]}scale=-2:{int(H * z)},crop={W}:{H},setsar=1,"
                "eq=brightness=-0.06:contrast=1.05:saturation=1.08,vignette=PI/5,format=yuv420p",
                "-frames:v", str(n), "-c:v", "libx264", "-preset", "veryfast", "-r", "30", p)
             fl.write(f"file '{p}'\n")
