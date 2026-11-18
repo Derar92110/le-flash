@@ -399,7 +399,7 @@ def fond_brut(total, tmp, coupes, graine=0):
         for i, (a, b) in enumerate(zip(bornes, bornes[1:])):
             v = vids[i % len(vids)] if i < len(vids) else rnd.choice(vids)
             dv = durees[v]
-            debut = rnd.uniform(min(6, dv * 0.1), max(dv - 8 - (b - a), 1))
+            debut = rnd.uniform(min(12, dv * 0.15), max(dv - 15 - (b - a), 13))  # évite logos du début et générique
             p = os.path.join(tmp, f"b{i:03d}.mp4")
             n = max(int(round((b - a) * 30)), 2)
             z = rnd.choice([1.0, 1.0, 1.06])
