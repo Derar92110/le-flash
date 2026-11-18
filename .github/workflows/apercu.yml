@@ -31,7 +31,8 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           STYLE: brut                                  # style validé par Medley le 18/11
-          ELEVENLABS_VOICE_ID: NpMqpbmlioUVh6og0U5p    # Hélène, voix féminine dynamique
+          ELEVENLABS_VOICE_ID: SmWACbi37pETyxxMhSpc    # « French Darling », voix féminine énergique (gaming)
+          ELEVENLABS_SPEED: "1.12"
         run: |
           ID=$(tr -d ' \r\n' < apercu.txt)
           mkdir -p apercu/scripts

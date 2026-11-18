@@ -40,7 +40,7 @@ def voix_off(texte, sortie, env):
     model = env.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")
     corps = json.dumps({"text": texte, "model_id": model,
                         "voice_settings": {"stability": 0.4, "similarity_boost": 0.8,
-                                           "style": 0.4, "speed": 1.0}}).encode()
+                                           "style": 0.4, "speed": float(env.get("ELEVENLABS_SPEED", "1.0"))}}).encode()
     entetes = {"xi-api-key": cle, "Content-Type": "application/json"}
     base = f"https://api.elevenlabs.io/v1/text-to-speech/{voice}"
     try:
