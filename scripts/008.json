@@ -1,0 +1,33 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 3 infos du JOUR 1 #shorts",
+  "hook": "FLASH GTA 6 · JOUR 1",
+  "segments": [
+    {
+      "texte": "GTA 6 est enfin sorti. Voici les trois infos du jour.",
+      "etiquette": "OFFICIEL"
+    },
+    {
+      "titre": "Record de streams",
+      "texte": "Un : record historique en streaming. Plus de *6 millions* de spectateurs en même temps au lancement, entre YouTube, Twitch et Kick. L'ancien record était autour de 1,7 million.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Bugs de connexion",
+      "texte": "Deux : sur PS5, des joueurs signalent des erreurs de connexion et des codes en boîte qui ne marchent pas. Si ton code bloque, contacte ton magasin.",
+      "etiquette": ""
+    },
+    {
+      "titre": "212 Go",
+      "texte": "Trois : prévois de la place. Rockstar annonce jusqu'à *212 gigas* selon ta console. Abonne-toi pour ton Flash de demain !",
+      "etiquette": "OFFICIEL"
+    }
+  ],
+  "description": "Le Flash du jour, 19 novembre 2026 : GTA 6 est sorti.\n\n1. Record de streaming : 6,38 millions de spectateurs simultanés au pic (chiffre préliminaire StreamsCharts, YouTube + Twitch + Kick). L'ancien record était la bêta de Valorant en 2020, environ 1,74 million. Ce sont des spectateurs, pas des ventes.\n2. Problèmes de lancement sur PS5 : messages d'erreur à la connexion au PSN et codes en boîte manquants, illisibles ou refusés. Sony et Rockstar n'ont pas confirmé de problème généralisé. Pour un code défectueux, PlayStation conseille de contacter le revendeur.\n3. Espace requis : jusqu'à 212 Go selon la console, d'après Rockstar.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "sortie GTA 6", "GTA 6 PS5", "record Twitch GTA 6"],
+  "hashtags": ["#PS5", "#Twitch"],
+  "sources": [
+    "GTA Boom, 18/11/2026 (StreamsCharts, 6,38 M) : https://www.gtaboom.com/gta-6-just-set-a-streaming-record-with-over-6-million-peak-viewers-at-launch-0dd9",
+    "eGamers, 19/11/2026 (problèmes PS5, codes, 212 Go) : https://egamers.io/gta-6-launch-problems-tracked-ps5-sign-in-errors-faulty-box-codes-and-patch-status/"
+  ]
+}
