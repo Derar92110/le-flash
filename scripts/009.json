@@ -1,0 +1,45 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : les infos du soir · JOUR 1 #shorts",
+  "hook": "FLASH DU SOIR · JOUR 1",
+  "segments": [
+    {
+      "texte": "Édition du soir. GTA 6 aurait déjà dépassé *un milliard* de dollars.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Milliard",
+      "texte": "Un : selon Sensor Tower, les précommandes numériques dépassent le milliard. Take-Two n'a encore rien confirmé.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Clin d'œil Dexter",
+      "texte": "Deux : des joueurs ont trouvé l'immeuble de *Dexter* à Vice Beach, avec son kit et son bateau.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Image de 2021",
+      "texte": "Trois : une maison cachée dans San Andreas en 2021 existe dans GTA 6. Et toi, t'as trouvé un secret ? Abonne-toi pour ton Flash de demain matin !",
+      "etiquette": ""
+    }
+  ],
+  "description": "Le Flash du soir, 19 novembre 2026, jour de sortie de GTA 6.\n\n1. Ventes : Sensor Tower estime les précommandes numériques entre 11 et 17 millions de copies, soit entre 1,1 et 1,65 milliard de dollars. C'est une estimation, pas un chiffre officiel : Take-Two n'a encore rien annoncé.\n2. Easter egg Dexter : à Washington Island (Vice Beach), des joueurs ont trouvé les « Trinity Apartments », clin d'œil à la série Dexter, un kit sur le toit et un bateau qui rappelle le « Slice of Life ».\n3. Une image cachée dans GTA San Andreas Definitive Edition (2021) correspond à une maison de Belville dans GTA 6, d'après le projet de cartographie de GTA Wiki. Rockstar n'a rien confirmé.",
+  "tags": [
+    "GTA 6",
+    "GTA VI",
+    "Grand Theft Auto 6",
+    "Le Flash",
+    "easter egg GTA 6",
+    "ventes GTA 6",
+    "Dexter GTA 6"
+  ],
+  "hashtags": [
+    "#EasterEgg",
+    "#Dexter"
+  ],
+  "sources": [
+    "BigGo Finance, 19/11/2026 (estimations Sensor Tower) : https://finance.biggo.com/news/27aca2cb9e7c40f8",
+    "Dexerto, 19/11/2026 (appartement de Dexter) : https://www.dexerto.com/gta/gta-6-players-find-dexters-apartment-serial-killer-kit-and-can-even-steal-his-boat-3429888/",
+    "VGC, 18/11/2026 (maison de San Andreas 2021) : https://www.videogameschronicle.com/news/gta-6-players-discover-our-real-first-look-at-the-game-was-likely-hidden-in-a-2021-remaster/"
+  ]
+}
