@@ -1,0 +1,71 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 3 infos du JOUR 2 #shorts",
+  "hook": "FLASH GTA 6 · JOUR 2",
+  "segments": [
+    {
+      "texte": "GTA 6 aurait rapporté *2,36 milliards* de dollars en un jour.",
+      "etiquette": "",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 2.36,
+        "unite": "milliards $",
+        "legende": "Estimation Sensor Tower, jour 1"
+      }
+    },
+    {
+      "titre": "Record battu",
+      "texte": "Un : 24,6 millions de copies dès le premier jour, selon Sensor Tower. GTA 5 en avait vendu *11 millions*.",
+      "etiquette": "",
+      "visuel": {
+        "type": "classement",
+        "titre": "Ventes du 1er jour",
+        "cible": "GTA 6",
+        "de": 2,
+        "a": 1,
+        "note": "24,6 M contre 11,2 M pour GTA 5"
+      }
+    },
+    {
+      "titre": "Chat furieux",
+      "texte": "Deux : vole une voiture avec un chat dedans. Le chat t'attaque, et Jason le jette *dehors*.",
+      "etiquette": "",
+      "visuel": {
+        "type": "image",
+        "cherche": "jason",
+        "legende": "Découverte de joueurs"
+      }
+    },
+    {
+      "titre": "30 images",
+      "texte": "Trois : sur PS5, le jeu tourne à *30 images* par seconde. Et toi, tu joues sur quelle console ? Abonne-toi pour ton Flash de demain !",
+      "etiquette": "",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 30,
+        "unite": "images/s",
+        "legende": "PS5 et Xbox Series X, Digital Foundry"
+      }
+    }
+  ],
+  "description": "Le Flash du jour, 20 novembre 2026, JOUR 2 de GTA 6.\n\n1. Ventes : Sensor Tower estime 24,6 millions de copies et 2,36 milliards de dollars à la fin du premier jour (précommandes comprises, environ 3/4 sur PlayStation). GTA V avait fait 11,21 millions de copies et 815,7 millions de dollars en 24 h (Guinness World Records). Estimation, pas un chiffre officiel : Take-Two n'a encore rien publié.\n2. Découverte de joueurs relayée sur X : si tu voles une voiture avec un chat à l'intérieur, il grogne et attaque, et Jason le jette dehors.\n3. Performances : environ 30 images par seconde sur PS5 et Xbox Series X ; la Series S tourne en 720p et descend vers 20 images par seconde (analyse Digital Foundry).",
+  "tags": [
+    "GTA 6",
+    "GTA VI",
+    "Grand Theft Auto 6",
+    "Le Flash",
+    "ventes GTA 6",
+    "record GTA 6",
+    "GTA 6 PS5"
+  ],
+  "hashtags": [
+    "#PS5",
+    "#Record"
+  ],
+  "sources": [
+    "HappyGamer, 19/11/2026 (Sensor Tower, 24,6 M / 2,36 Md$) : https://happygamer.com/gta-6-sales-24-6-million-sensor-tower-176512/",
+    "Men's Journal, 19/11/2026 (record GTA V 11,21 M, Guinness) : https://mensjournal.com/news/gta-6-sales-19-million-copies-gta-v-record",
+    "TechRadar, live du 19/11/2026 (chat dans la voiture, post X) : https://www.techradar.com/live/news/gta-6-launch-day-november-19",
+    "Kotaku, live du 19/11/2026 (Digital Foundry, 30 fps) : https://kotaku.com/live-updates-on-gta-6-the-biggest-launch-in-gaming-history-2000758030"
+  ]
+}
