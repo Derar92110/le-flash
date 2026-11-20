@@ -11,11 +11,43 @@ Configuration : fichier .env à côté de ce script (créé par installer.bat de
 Usage : python pipeline.py            (traite tout)
         python pipeline.py 004        (un seul script)
 """
-import json, os, subprocess, sys, urllib.request
+import json, os, re, subprocess, sys, urllib.request
 
 ICI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ICI)
 import make_short  # noqa: E402
+
+
+
+def pause(sec):
+    return f' <break time="{sec}s" /> '
+
+
+def respirer(texte):
+    """Pauses naturelles dans un segment (style motion) : après « Un : », entre les phrases, avant l'appel à l'action."""
+    t = texte.strip()
+    # « Un : », « Deux : », « Dernier point : »… on marque le temps avant l'info
+    t = re.sub(r"^((?:Un|Deux|Trois|Quatre|Cinq|Premier point|Dernier point|Bonus)\s*:)\s*", lambda m: m.group(1) + pause(0.45), t, flags=re.I)
+    # appel à l'action : une respiration plus longue avant
+    t = re.sub(r"([.!?…])\s+(?=(?:Et toi|Et vous|Abonne|Dis-moi|Dites-moi))", lambda m: m.group(1) + pause(0.6), t)
+    # entre deux phrases du même point
+    t = re.sub(r"([.!?…])\s+(?=[A-ZÀ-ÖØ-Þ*])", lambda m: m.group(1) + pause(0.35), t)
+    return t
+
+def style_et_voix(i, s, env):
+    """Style du montage + voix associée. STYLE=alterne : un Flash sur deux en motion design (numéros impairs),
+    l'autre en style brut (choix de Medley le 20/11). Un script peut forcer "style": "motion" ou "brut"."""
+    style = (s.get("style") or env.get("STYLE") or "").lower()
+    if style == "alterne":
+        style = "motion" if i.isdigit() and int(i) % 2 == 1 else "brut"
+    env_i = dict(env)
+    if style == "motion":
+        env_i["ELEVENLABS_VOICE_ID"] = env.get("VOIX_MOTION") or env.get("ELEVENLABS_VOICE_ID") or "nVPCtAFzgyMX3FZKNzH0"  # Anna B
+        env_i["ELEVENLABS_SPEED"] = env.get("VITESSE_MOTION") or env.get("ELEVENLABS_SPEED") or "1.0"
+    elif style == "brut":
+        env_i["ELEVENLABS_VOICE_ID"] = env.get("VOIX_BRUT") or env.get("ELEVENLABS_VOICE_ID") or "SmWACbi37pETyxxMhSpc"  # French Darling
+        env_i["ELEVENLABS_SPEED"] = env.get("VITESSE_BRUT") or env.get("ELEVENLABS_SPEED") or "1.12"
+    return style, env_i
 
 
 def charger_env():
@@ -75,14 +107,25 @@ def main():
         if os.path.exists(video) or os.path.exists(d("publies", f"{i}.txt")):
             continue
         s = json.load(open(d("scripts", f"{i}.json"), encoding="utf-8"))
+        style, env_i = style_et_voix(i, s, env)
+        if style:
+            os.environ["STYLE"] = style  # make_short lit STYLE pour le style brut
         if s.get("segments") and not s.get("texte"):
-            s["texte"] = " ".join(g["texte"] for g in s["segments"])
+            if style == "motion":
+                # motion : une vraie respiration entre deux infos (voix moins précipitée)
+                s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.9")}s" /> '.join(respirer(g["texte"]) for g in s["segments"])
+            else:
+                s["texte"] = " ".join(g["texte"] for g in s["segments"])
         mp3 = d("voix", f"{i}.mp3")
         if not os.path.exists(mp3):
-            print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env)
+            print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env_i)
         clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script (images + vidéos)
-        print(f"[{i}] montage ({s.get('format', 'short')})…")
-        make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
+        print(f"[{i}] montage ({s.get('format', 'short')}, style {style or 'défaut'})…")
+        if style == "motion" and s.get("format", "short") == "short":
+            import motion_render  # motion design Remotion (dossier motion/)
+            motion_render.rendre(d("scripts", f"{i}.json"), mp3, video)
+        else:
+            make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
         if env.get("AUTO_UPLOAD") == "1" and os.path.exists(d("client_secret.json")):
             print(f"[{i}] envoi YouTube…")
             subprocess.check_call([sys.executable, d("upload_youtube.py"), video,

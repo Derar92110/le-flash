@@ -1,0 +1,8 @@
+node_modules/
+out/
+public/voix.mp3
+public/musique.mp3
+public/props.json
+public/images/
+public/videos/
+public/mur/
