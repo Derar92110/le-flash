@@ -192,13 +192,28 @@ def extrait_video(i, graine, duree_scene):
     if v not in _CADRES:
         _CADRES[v] = make_short.zone_utile(v, dv)
     d = duree_scene + 1.5
-    debut = rnd.uniform(min(12, dv * 0.15), max(dv - 15 - d, 13))
     os.makedirs(os.path.join(PUBLIC, "videos"), exist_ok=True)
     nom = f"videos/{i:02d}{'f' if 'fond' in graine else ''}.mp4"
-    make_short.ff("-ss", f"{debut:.2f}", "-i", v, "-an", "-t", f"{d:.2f}", "-vf",
-                  f"fps=30,{_CADRES[v]}scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,setsar=1,format=yuv420p",
-                  "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", os.path.join(PUBLIC, nom))
+    sortie = os.path.join(PUBLIC, nom)
+    for essai in range(6):  # évite les cartons noirs / titres (« Rockstar Games presents ») : image assez lumineuse
+        debut = rnd.uniform(dv * 0.18, max(dv * 0.85 - d, dv * 0.18 + 1))
+        make_short.ff("-ss", f"{debut:.2f}", "-i", v, "-an", "-t", f"{d:.2f}", "-vf",
+                      f"fps=30,{_CADRES[v]}scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,setsar=1,format=yuv420p",
+                      "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", sortie)
+        if luminosite(sortie) > 55:
+            break
     return nom
+
+
+def luminosite(p):
+    """Luminosité moyenne (0-255) mesurée sur l'extrait ; les cartons titre sont presque noirs."""
+    try:
+        err = subprocess.run(["ffmpeg", "-i", p, "-vf", "fps=4,signalstats,metadata=print:key=lavfi.signalstats.YAVG",
+                              "-f", "null", "-"], capture_output=True, text=True).stderr
+        vals = [float(x) for x in re.findall(r"YAVG=([\d.]+)", err)]
+        return min(sum(vals) / len(vals), sorted(vals)[len(vals) // 4]) if vals else 255
+    except Exception:
+        return 255
 
 
 # ---------------------------------------------------------------- découpage en scènes
