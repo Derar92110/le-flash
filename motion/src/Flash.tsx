@@ -355,20 +355,17 @@ export const Flash: React.FC<FlashProps> = (p) => {
         <EnTete hook={p.hook} />
       </Sequence>
       <Grain />
-      {/* bruitages : souffle à chaque transition, petit pop à l'arrivée du widget, impact sur les mots-clés */}
+      {/* bruitages : souffle à chaque transition, petit pop à l'arrivée du widget */}
       {segs.map((s, i) => {
         const debut = Math.round(s.start * fps);
         return (
           <React.Fragment key={`sfx${i}`}>
-            {i > 0 && <Sequence from={Math.max(0, debut - 8)} durationInFrames={24}><Audio src={staticFile("sfx/whoosh.wav")} volume={0.32} /></Sequence>}
+            {i > 0 && <Sequence from={Math.max(0, debut - 8)} durationInFrames={24}><Audio src={staticFile("sfx/whoosh.wav")} volume={0.16} /></Sequence>}
             <Sequence from={debut + 8} durationInFrames={8}><Audio src={staticFile("sfx/pop.wav")} volume={0.18} /></Sequence>
           </React.Fragment>
         );
       })}
-      {p.mots.filter((m) => m.cle && (p.mots[p.mots.indexOf(m) - 1]?.cle !== true)).map((m, i) => (
-        <Sequence key={`imp${i}`} from={Math.round(m.start * fps)} durationInFrames={20}><Audio src={staticFile("sfx/impact.wav")} volume={0.28} /></Sequence>
-      ))}
-      <Sequence from={Math.max(0, Math.round(finVoix * fps) - 6)} durationInFrames={24}><Audio src={staticFile("sfx/whoosh.wav")} volume={0.3} /></Sequence>
+      <Sequence from={Math.max(0, Math.round(finVoix * fps) - 6)} durationInFrames={24}><Audio src={staticFile("sfx/whoosh.wav")} volume={0.16} /></Sequence>
       <Sequence from={Math.round(finVoix * fps) + 40} durationInFrames={4}><Audio src={staticFile("sfx/clic.wav")} volume={0.35} /></Sequence>
       {p.voix && <Audio src={staticFile(p.voix)} />}
       {p.musique && <Audio src={staticFile(p.musique)} volume={(fr) => (p.volumeMusique ?? 0.1) * interpolate(fr, [durationInFrames - 20, durationInFrames], [1, 0], clamp)} />}
