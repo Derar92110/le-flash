@@ -1,5 +1,5 @@
 import React from "react";
-import { Easing, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { Easing, Img, interpolate, OffthreadVideo, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { BLEU, ETIQ, ROUGE, type Theme, type Visuel } from "./types";
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
@@ -265,6 +265,33 @@ const ImageJeu: React.FC<{ v: Extract<Visuel, { type: "image" }>; th: Theme; dur
   );
 };
 
+// ---------- extrait vidéo du jeu dans une carte ----------
+const VideoJeu: React.FC<{ v: Extract<Visuel, { type: "video" }>; th: Theme; duree: number }> = ({ v, th, duree }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const z = interpolate(f, [0, duree * fps], [1.04, 1.14], clamp);
+  const balaie = ((f % 75) / 75) * 260 - 80; // reflet qui traverse la carte
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 26 }}>
+      <div style={{ width: 880, height: 495, borderRadius: 48, overflow: "hidden", boxShadow: `${th.ombre}, 0 0 80px ${BLEU}55`,
+        border: `3px solid ${th.carteBord}`, position: "relative", background: "#0b1440" }}>
+        <OffthreadVideo src={staticFile(v.src)} muted style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${z})` }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(5,8,30,0.15), transparent 40%, rgba(5,8,30,0.55))" }} />
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: `${balaie}%`, width: "22%", transform: "skewX(-18deg)",
+          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)" }} />
+        <div style={{ position: "absolute", top: 24, left: 26, display: "flex", alignItems: "center", gap: 10, background: "rgba(255,45,61,0.92)",
+          color: "#fff", fontFamily: POLICE, fontWeight: 800, fontSize: 24, letterSpacing: 2, borderRadius: 999, padding: "6px 16px" }}>
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: "#fff", opacity: 0.4 + 0.6 * Math.abs(Math.sin(f / 8)) }} />EN JEU
+        </div>
+        <div style={{ position: "absolute", left: 26, right: 26, bottom: 22, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.3)" }}>
+          <div style={{ width: `${interpolate(f, [0, duree * fps], [3, 97], clamp)}%`, height: "100%", borderRadius: 3, background: "#fff" }} />
+        </div>
+      </div>
+      {v.legende && <Bulle th={th} texte={v.legende} delai={16} icone="●" />}
+    </div>
+  );
+};
+
 // ---------- carte par défaut : titre + onde ----------
 const CarteTitre: React.FC<{ titre: string; sous?: string; th: Theme; etiquette?: string }> = ({ titre, sous, th }) => {
   const f = useCurrentFrame();
@@ -327,6 +354,7 @@ export const Widget: React.FC<{ v: Visuel; th: Theme; duree: number }> = ({ v, t
     case "prix": return <Prix v={v} th={th} />;
     case "image": return <ImageJeu v={v} th={th} duree={duree} />;
     case "question": return <Question v={v} th={th} />;
+    case "video": return <VideoJeu v={v} th={th} duree={duree} />;
     default: return <CarteTitre titre={v.titre || ""} sous={v.sous} th={th} />;
   }
 };

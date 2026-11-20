@@ -57,7 +57,7 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           STYLE: ${{ vars.STYLE || 'motion' }}                          # motion design (20/11) ; variable STYLE=brut pour revenir en arrière
           ELEVENLABS_VOICE_ID: ${{ vars.VOIX || 'nVPCtAFzgyMX3FZKNzH0' }}  # « Anna B », choisie par Medley le 20/11
-          ELEVENLABS_SPEED: ${{ vars.VITESSE || '1.08' }}
+          ELEVENLABS_SPEED: ${{ vars.VITESSE || '1.0' }}
           AUTO_UPLOAD: "1"
           PUBLICATION: ${{ vars.PUBLICATION || 'public' }}
         run: |

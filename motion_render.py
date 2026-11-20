@@ -133,9 +133,10 @@ def preparer_visuels(segs, hook, graine):
         v = g.get("visuel") or deduire_visuel(g, i, hook)
         if v is None:
             # alternance image du jeu / carte titre pour les segments sans chiffre
-            veut_image = g.get("suite") or (rang_libre % 2 == 0)
+            choix = ["video", "image", "carte"] if trailers_dispo() else ["image", "carte"]
+            t = choix[rang_libre % len(choix)]
             rang_libre += 1
-            v = {"type": "image", "legende": g.get("titre") or None} if veut_image else \
+            v = {"type": t, "legende": g.get("titre") or None} if t != "carte" else \
                 {"type": "carte", "titre": g.get("titre") or (hook if i == 0 else "")}
         if v.get("type") == "image":
             src = choisir_image(v.get("cherche") or g.get("titre", ""), f"{graine}-{i}", deja)
@@ -147,10 +148,57 @@ def preparer_visuels(segs, hook, graine):
                 v = {**v, "src": nom}
             else:
                 v = {"type": "carte", "titre": g.get("titre") or (hook if i == 0 else "")}
+        if v.get("type") == "video":
+            src = extrait_video(i, f"{graine}-{i}", g.get("_duree", 5))
+            v = {**v, "src": src} if src else {"type": "image", "legende": v.get("legende")}
+            if not src:
+                src = choisir_image(g.get("titre", ""), f"{graine}-{i}", deja)
+                if src:
+                    deja.append(src); nom = f"images/{i:02d}{os.path.splitext(src)[1]}"
+                    os.makedirs(os.path.join(PUBLIC, "images"), exist_ok=True)
+                    shutil.copy(src, os.path.join(PUBLIC, nom)); v["src"] = nom
+                else:
+                    v = {"type": "carte", "titre": g.get("titre") or hook}
+        # fond : la même image/vidéo floutée derrière, sinon un extrait de trailer teinté
+        if v.get("type") in ("image", "video") and v.get("src"):
+            g["fond"] = {"type": v["type"], "src": v["src"]}
+        else:
+            src = extrait_video(i, f"{graine}-fond-{i}", g.get("_duree", 5))
+            if src:
+                g["fond"] = {"type": "video", "src": src}
         if v.get("type") == "carte" and not v.get("titre"):
             v["titre"] = g.get("titre") or hook
         g["visuel"] = {k: x for k, x in v.items() if x is not None}
     return segs
+
+
+# ---------------------------------------------------------------- extraits des trailers officiels
+def trailers_dispo():
+    return sorted(glob.glob(os.path.join(ICI, "videos", "trailers", "*.mp4")))
+
+
+_CADRES = {}
+
+
+def extrait_video(i, graine, duree_scene):
+    """Extrait muet de trailer (1280x720, bandes noires retirées) pour la scène i -> public/videos/NN.mp4."""
+    vids = trailers_dispo()
+    if not vids:
+        return None
+    import make_short
+    rnd = random.Random(graine)
+    v = vids[(i + rnd.randrange(len(vids))) % len(vids)]
+    dv = make_short.duree(v)
+    if v not in _CADRES:
+        _CADRES[v] = make_short.zone_utile(v, dv)
+    d = duree_scene + 1.5
+    debut = rnd.uniform(min(12, dv * 0.15), max(dv - 15 - d, 13))
+    os.makedirs(os.path.join(PUBLIC, "videos"), exist_ok=True)
+    nom = f"videos/{i:02d}{'f' if 'fond' in graine else ''}.mp4"
+    make_short.ff("-ss", f"{debut:.2f}", "-i", v, "-an", "-t", f"{d:.2f}", "-vf",
+                  f"fps=30,{_CADRES[v]}scale=1280:720:force_original_aspect_ratio=increase,crop=1280:720,setsar=1,format=yuv420p",
+                  "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", os.path.join(PUBLIC, nom))
+    return nom
 
 
 # ---------------------------------------------------------------- découpage en scènes
@@ -207,12 +255,15 @@ def construire_props(script_path, voix=None, total=None):
     liste = [{"w": w, "start": round(a, 3), "end": round(b, 3), "cle": c, "seg": i}
              for (w, c, i), (a, b) in zip(mots, temps)]
     fin_voix = max(total, liste[-1]["end"] + 0.3) if liste else total
+    for i, g in enumerate(segs):
+        ms = [m for m in liste if m["seg"] == i]
+        g["_duree"] = (ms[-1]["end"] - ms[0]["start"] + 0.5) if ms else 4
     preparer_visuels(segs, s.get("hook", ""), os.path.basename(script_path))
     segments = []
     for i, g in enumerate(segs):
         ms = [m for m in liste if m["seg"] == i]
         segments.append({"titre": g.get("titre", ""), "texte": g["texte"], "etiquette": g.get("etiquette", ""),
-                         "visuel": g["visuel"],
+                         "visuel": g["visuel"], "fond": g.get("fond"),
                          "start": 0 if i == 0 else round(max(0, ms[0]["start"] - 0.12), 3) if ms else 0,
                          "end": ms[-1]["end"] if ms else fin_voix})
     return {"hook": s.get("hook", "LE FLASH"), "segments": segments, "mots": liste,
@@ -227,6 +278,7 @@ def choisir_musique():
 def rendre(script_path, voix, sortie, demo=False):
     os.makedirs(PUBLIC, exist_ok=True)
     shutil.rmtree(os.path.join(PUBLIC, "images"), ignore_errors=True)
+    shutil.rmtree(os.path.join(PUBLIC, "videos"), ignore_errors=True)
     props = construire_props(script_path, None if demo else voix, total=26 if demo else None)
     if not demo:
         shutil.copy(voix, os.path.join(PUBLIC, "voix.mp3"))
@@ -241,7 +293,7 @@ def rendre(script_path, voix, sortie, demo=False):
     if not os.path.isdir(os.path.join(MOTION, "node_modules")):
         subprocess.check_call(["npm", "ci", "--no-audit", "--no-fund"], cwd=MOTION)
     cmd = ["npx", "remotion", "render", "src/index.ts", "Flash", os.path.abspath(sortie),
-           f"--props={chemin_props}", "--codec=h264", "--crf=18", "--audio-bitrate=192k"]
+           f"--props={chemin_props}", "--codec=h264", f"--crf={os.environ.get('REMOTION_CRF', '21')}", "--audio-bitrate=192k"]
     if os.environ.get("REMOTION_CONCURRENCY"):
         cmd.append(f"--concurrency={os.environ['REMOTION_CONCURRENCY']}")
     if os.environ.get("CHROME_PATH"):

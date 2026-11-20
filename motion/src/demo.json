@@ -11,6 +11,10 @@
     "suffixe": "$",
     "unite": "estimation Sensor Tower"
    },
+   "fond": {
+    "type": "video",
+    "src": "videos/00f.mp4"
+   },
    "start": 0,
    "end": 4.259
   },
@@ -23,6 +27,10 @@
     "titre": "11 à 17 millions",
     "sous": "de précommandes numériques (estimation)"
    },
+   "fond": {
+    "type": "video",
+    "src": "videos/01f.mp4"
+   },
    "start": 4.189,
    "end": 8.679
   },
@@ -31,8 +39,12 @@
    "texte": "Take-Two n'a encore rien confirmé.",
    "etiquette": "",
    "visuel": {
-    "type": "image",
-    "src": "images/02.jpg"
+    "type": "video",
+    "src": "videos/02.mp4"
+   },
+   "fond": {
+    "type": "video",
+    "src": "videos/02.mp4"
    },
    "start": 8.613,
    "end": 10.711
@@ -45,6 +57,10 @@
     "type": "image",
     "cherche": "vice beach",
     "legende": "Vice Beach",
+    "src": "images/03.jpg"
+   },
+   "fond": {
+    "type": "image",
     "src": "images/03.jpg"
    },
    "start": 10.645,
@@ -60,6 +76,10 @@
     "legende": "San Andreas, 2021",
     "src": "images/04.jpg"
    },
+   "fond": {
+    "type": "image",
+    "src": "images/04.jpg"
+   },
    "start": 16.469,
    "end": 20.992
   },
@@ -69,6 +89,10 @@
    "etiquette": "",
    "visuel": {
     "type": "question"
+   },
+   "fond": {
+    "type": "video",
+    "src": "videos/05f.mp4"
    },
    "start": 20.894,
    "end": 25.782

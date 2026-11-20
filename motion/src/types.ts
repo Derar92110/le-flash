@@ -17,13 +17,17 @@ export type Visuel =
   | { type: "post"; auteur: string; texte: string; reseau?: string }
   | { type: "prix"; montant: string; legende?: string }
   | { type: "image"; src: string; legende?: string; cherche?: string }
-  | { type: "question"; texte?: string };
+  | { type: "question"; texte?: string }
+  | { type: "video"; src: string; legende?: string };
+
+export type Fond = { type: "image" | "video"; src: string };
 
 export type Segment = {
   titre?: string;
   texte: string;
   etiquette?: string;
   visuel?: Visuel;
+  fond?: Fond | null;
   start: number;
   end: number;
 };

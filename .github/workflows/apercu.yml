@@ -39,7 +39,7 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           STYLE: ${{ vars.STYLE_APERCU || 'motion' }}  # aperçus : nouveau style motion design (20/11)
           ELEVENLABS_VOICE_ID: ${{ vars.VOIX_APERCU || 'nVPCtAFzgyMX3FZKNzH0' }}  # « Anna B », choisie par Medley le 20/11
-          ELEVENLABS_SPEED: ${{ vars.VITESSE_APERCU || '1.08' }}
+          ELEVENLABS_SPEED: ${{ vars.VITESSE_APERCU || '1.0' }}
         run: |
           ID=$(tr -d ' \r\n' < apercu.txt)
           mkdir -p apercu/scripts

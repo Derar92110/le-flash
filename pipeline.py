@@ -76,7 +76,11 @@ def main():
             continue
         s = json.load(open(d("scripts", f"{i}.json"), encoding="utf-8"))
         if s.get("segments") and not s.get("texte"):
-            s["texte"] = " ".join(g["texte"] for g in s["segments"])
+            if (s.get("style") or env.get("STYLE") or "").lower() == "motion":
+                # motion : une vraie respiration entre deux infos (voix moins précipitée)
+                s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.5")}s" /> '.join(g["texte"] for g in s["segments"])
+            else:
+                s["texte"] = " ".join(g["texte"] for g in s["segments"])
         mp3 = d("voix", f"{i}.mp3")
         if not os.path.exists(mp3):
             print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env)
