@@ -23,8 +23,15 @@ jobs:
 
       - name: Outils (ffmpeg, librairies YouTube)
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-color-emoji
           pip install -q google-api-python-client google-auth-oauthlib
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: motion/package-lock.json
+      - name: Moteur motion design (Remotion)
+        run: cd motion && npm ci --no-audit --no-fund && npx remotion browser ensure
 
       - name: Cache des images et musiques
         uses: actions/cache@v4
@@ -48,9 +55,9 @@ jobs:
       - name: Voix + montage + envoi
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          STYLE: brut                                  # style validé par Medley le 18/11
-          ELEVENLABS_VOICE_ID: SmWACbi37pETyxxMhSpc    # « French Darling », voix féminine énergique (gaming)
-          ELEVENLABS_SPEED: "1.12"
+          STYLE: ${{ vars.STYLE || 'motion' }}                          # motion design (20/11) ; variable STYLE=brut pour revenir en arrière
+          ELEVENLABS_VOICE_ID: ${{ vars.VOIX || 'nVPCtAFzgyMX3FZKNzH0' }}  # « Anna B », choisie par Medley le 20/11
+          ELEVENLABS_SPEED: ${{ vars.VITESSE || '1.08' }}
           AUTO_UPLOAD: "1"
           PUBLICATION: ${{ vars.PUBLICATION || 'public' }}
         run: |
