@@ -34,6 +34,22 @@ def respirer(texte):
     t = re.sub(r"([.!?…])\s+(?=[A-ZÀ-ÖØ-Þ*])", lambda m: m.group(1) + pause(0.35), t)
     return t
 
+def style_et_voix(i, s, env):
+    """Style du montage + voix associée. STYLE=alterne : un Flash sur deux en motion design (numéros impairs),
+    l'autre en style brut (choix de Medley le 20/11). Un script peut forcer "style": "motion" ou "brut"."""
+    style = (s.get("style") or env.get("STYLE") or "").lower()
+    if style == "alterne":
+        style = "motion" if i.isdigit() and int(i) % 2 == 1 else "brut"
+    env_i = dict(env)
+    if style == "motion":
+        env_i["ELEVENLABS_VOICE_ID"] = env.get("VOIX_MOTION") or env.get("ELEVENLABS_VOICE_ID") or "nVPCtAFzgyMX3FZKNzH0"  # Anna B
+        env_i["ELEVENLABS_SPEED"] = env.get("VITESSE_MOTION") or env.get("ELEVENLABS_SPEED") or "1.0"
+    elif style == "brut":
+        env_i["ELEVENLABS_VOICE_ID"] = env.get("VOIX_BRUT") or env.get("ELEVENLABS_VOICE_ID") or "SmWACbi37pETyxxMhSpc"  # French Darling
+        env_i["ELEVENLABS_SPEED"] = env.get("VITESSE_BRUT") or env.get("ELEVENLABS_SPEED") or "1.12"
+    return style, env_i
+
+
 def charger_env():
     env = dict(os.environ)  # GitHub Actions : secrets passés en variables d environnement
     p = os.path.join(ICI, ".env")
@@ -91,17 +107,19 @@ def main():
         if os.path.exists(video) or os.path.exists(d("publies", f"{i}.txt")):
             continue
         s = json.load(open(d("scripts", f"{i}.json"), encoding="utf-8"))
+        style, env_i = style_et_voix(i, s, env)
+        if style:
+            os.environ["STYLE"] = style  # make_short lit STYLE pour le style brut
         if s.get("segments") and not s.get("texte"):
-            if (s.get("style") or env.get("STYLE") or "").lower() == "motion":
+            if style == "motion":
                 # motion : une vraie respiration entre deux infos (voix moins précipitée)
                 s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.9")}s" /> '.join(respirer(g["texte"]) for g in s["segments"])
             else:
                 s["texte"] = " ".join(g["texte"] for g in s["segments"])
         mp3 = d("voix", f"{i}.mp3")
         if not os.path.exists(mp3):
-            print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env)
+            print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env_i)
         clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script (images + vidéos)
-        style = (s.get("style") or env.get("STYLE") or "").lower()
         print(f"[{i}] montage ({s.get('format', 'short')}, style {style or 'défaut'})…")
         if style == "motion" and s.get("format", "short") == "short":
             import motion_render  # motion design Remotion (dossier motion/)
