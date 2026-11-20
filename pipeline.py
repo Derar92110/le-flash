@@ -81,8 +81,13 @@ def main():
         if not os.path.exists(mp3):
             print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env)
         clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script (images + vidéos)
-        print(f"[{i}] montage ({s.get('format', 'short')})…")
-        make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
+        style = (s.get("style") or env.get("STYLE") or "").lower()
+        print(f"[{i}] montage ({s.get('format', 'short')}, style {style or 'défaut'})…")
+        if style == "motion" and s.get("format", "short") == "short":
+            import motion_render  # motion design Remotion (dossier motion/)
+            motion_render.rendre(d("scripts", f"{i}.json"), mp3, video)
+        else:
+            make_short.rendre(d("scripts", f"{i}.json"), mp3, clips, video)
         if env.get("AUTO_UPLOAD") == "1" and os.path.exists(d("client_secret.json")):
             print(f"[{i}] envoi YouTube…")
             subprocess.check_call([sys.executable, d("upload_youtube.py"), video,

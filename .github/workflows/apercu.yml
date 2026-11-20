@@ -15,7 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Outils
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && pip install -q -U yt-dlp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-color-emoji && pip install -q -U yt-dlp
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: motion/package-lock.json
+      - name: Moteur motion design (Remotion)
+        run: cd motion && npm ci --no-audit --no-fund && npx remotion browser ensure
       - name: Cache des images et musiques
         uses: actions/cache@v4
         with:
@@ -30,14 +37,14 @@ jobs:
       - name: Rendu de l'aperçu (voix + montage, pas d'envoi YouTube)
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          STYLE: brut                                  # style validé par Medley le 18/11
-          ELEVENLABS_VOICE_ID: SmWACbi37pETyxxMhSpc    # « French Darling », voix féminine énergique (gaming)
-          ELEVENLABS_SPEED: "1.12"
+          STYLE: ${{ vars.STYLE_APERCU || 'motion' }}  # aperçus : nouveau style motion design (20/11)
+          ELEVENLABS_VOICE_ID: ${{ vars.VOIX_APERCU || 'SmWACbi37pETyxxMhSpc' }}  # « French Darling » par défaut
+          ELEVENLABS_SPEED: ${{ vars.VITESSE_APERCU || '1.12' }}
         run: |
           ID=$(tr -d ' \r\n' < apercu.txt)
           mkdir -p apercu/scripts
           cp essais/$ID.json apercu/scripts/$ID.json 2>/dev/null || cp scripts/$ID.json apercu/scripts/$ID.json
-          cp -r make_short.py pipeline.py marque apercu/
+          cp -r make_short.py pipeline.py motion_render.py marque motion apercu/
           cp -r clips apercu/ 2>/dev/null || true
           cp -r musique apercu/ 2>/dev/null || true
           cp -r videos apercu/ 2>/dev/null || true

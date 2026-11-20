@@ -1,0 +1,585 @@
+{
+ "hook": "FLASH DU SOIR · JOUR 1",
+ "segments": [
+  {
+   "titre": "",
+   "texte": "Édition du soir. GTA 6 aurait déjà dépassé *un milliard* de dollars.",
+   "etiquette": "",
+   "visuel": {
+    "type": "compteur",
+    "valeur": 1000000000,
+    "suffixe": "$",
+    "unite": "estimation Sensor Tower"
+   },
+   "start": 0,
+   "end": 3.942
+  },
+  {
+   "titre": "Milliard",
+   "texte": "Un : selon Sensor Tower, les précommandes numériques dépassent le milliard. Take-Two n'a encore rien confirmé.",
+   "etiquette": "",
+   "visuel": {
+    "type": "carte",
+    "titre": "11 à 17 millions",
+    "sous": "de précommandes numériques (estimation)"
+   },
+   "start": 3.868,
+   "end": 9.89
+  },
+  {
+   "titre": "Clin d'œil Dexter",
+   "texte": "Deux : des joueurs ont trouvé l'immeuble de *Dexter* à Vice Beach, avec son kit et son bateau.",
+   "etiquette": "",
+   "visuel": {
+    "type": "image",
+    "cherche": "vice beach",
+    "legende": "Vice Beach",
+    "src": "images/02.jpg"
+   },
+   "start": 9.82,
+   "end": 15.267
+  },
+  {
+   "titre": "Image de 2021",
+   "texte": "Trois : une maison cachée dans San Andreas en 2021 existe dans GTA 6. Et toi, t'as trouvé un secret ? Abonne-toi pour ton Flash de demain matin !",
+   "etiquette": "",
+   "visuel": {
+    "type": "image",
+    "cherche": "belville",
+    "legende": "San Andreas, 2021",
+    "src": "images/03.jpg"
+   },
+   "start": 15.189,
+   "end": 23.783
+  }
+ ],
+ "mots": [
+  {
+   "w": "Édition",
+   "start": 0.2,
+   "end": 0.575,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "du",
+   "start": 0.616,
+   "end": 0.804,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "soir.",
+   "start": 0.824,
+   "end": 1.124,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "GTA",
+   "start": 1.157,
+   "end": 1.382,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "6",
+   "start": 1.407,
+   "end": 1.557,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "aurait",
+   "start": 1.574,
+   "end": 1.911,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "déjà",
+   "start": 1.948,
+   "end": 2.21,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "dépassé",
+   "start": 2.24,
+   "end": 2.614,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "un",
+   "start": 2.656,
+   "end": 2.843,
+   "cle": true,
+   "seg": 0
+  },
+  {
+   "w": "milliard",
+   "start": 2.864,
+   "end": 3.276,
+   "cle": true,
+   "seg": 0
+  },
+  {
+   "w": "de",
+   "start": 3.322,
+   "end": 3.509,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "dollars.",
+   "start": 3.53,
+   "end": 3.942,
+   "cle": false,
+   "seg": 0
+  },
+  {
+   "w": "Un",
+   "start": 3.988,
+   "end": 4.175,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": ":",
+   "start": 4.196,
+   "end": 4.346,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "selon",
+   "start": 4.362,
+   "end": 4.662,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "Sensor",
+   "start": 4.695,
+   "end": 5.032,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "Tower,",
+   "start": 5.07,
+   "end": 5.407,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "les",
+   "start": 5.444,
+   "end": 5.669,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "précommandes",
+   "start": 5.694,
+   "end": 6.256,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "numériques",
+   "start": 6.319,
+   "end": 6.806,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "dépassent",
+   "start": 6.86,
+   "end": 7.309,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "le",
+   "start": 7.359,
+   "end": 7.546,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "milliard.",
+   "start": 7.567,
+   "end": 8.017,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "Take-Two",
+   "start": 8.067,
+   "end": 8.479,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "n'a",
+   "start": 8.525,
+   "end": 8.749,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "encore",
+   "start": 8.774,
+   "end": 9.111,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "rien",
+   "start": 9.149,
+   "end": 9.411,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "confirmé.",
+   "start": 9.44,
+   "end": 9.89,
+   "cle": false,
+   "seg": 1
+  },
+  {
+   "w": "Deux",
+   "start": 9.94,
+   "end": 10.202,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": ":",
+   "start": 10.231,
+   "end": 10.381,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "des",
+   "start": 10.398,
+   "end": 10.622,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "joueurs",
+   "start": 10.647,
+   "end": 11.022,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "ont",
+   "start": 11.063,
+   "end": 11.288,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "trouvé",
+   "start": 11.313,
+   "end": 11.65,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "l'immeuble",
+   "start": 11.688,
+   "end": 12.175,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "de",
+   "start": 12.229,
+   "end": 12.416,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "Dexter",
+   "start": 12.437,
+   "end": 12.774,
+   "cle": true,
+   "seg": 2
+  },
+  {
+   "w": "à",
+   "start": 12.812,
+   "end": 12.961,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "Vice",
+   "start": 12.978,
+   "end": 13.24,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "Beach,",
+   "start": 13.269,
+   "end": 13.607,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "avec",
+   "start": 13.644,
+   "end": 13.906,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "son",
+   "start": 13.935,
+   "end": 14.16,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "kit",
+   "start": 14.185,
+   "end": 14.41,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "et",
+   "start": 14.435,
+   "end": 14.622,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "son",
+   "start": 14.643,
+   "end": 14.868,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "bateau.",
+   "start": 14.893,
+   "end": 15.267,
+   "cle": false,
+   "seg": 2
+  },
+  {
+   "w": "Trois",
+   "start": 15.309,
+   "end": 15.609,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": ":",
+   "start": 15.642,
+   "end": 15.792,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "une",
+   "start": 15.808,
+   "end": 16.033,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "maison",
+   "start": 16.058,
+   "end": 16.395,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "cachée",
+   "start": 16.433,
+   "end": 16.77,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "dans",
+   "start": 16.807,
+   "end": 17.07,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "San",
+   "start": 17.099,
+   "end": 17.324,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "Andreas",
+   "start": 17.349,
+   "end": 17.723,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "en",
+   "start": 17.765,
+   "end": 17.952,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "2021",
+   "start": 17.973,
+   "end": 18.235,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "existe",
+   "start": 18.264,
+   "end": 18.601,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "dans",
+   "start": 18.639,
+   "end": 18.901,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "GTA",
+   "start": 18.93,
+   "end": 19.155,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "6.",
+   "start": 19.18,
+   "end": 19.367,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "Et",
+   "start": 19.388,
+   "end": 19.575,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "toi,",
+   "start": 19.596,
+   "end": 19.858,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "t'as",
+   "start": 19.887,
+   "end": 20.15,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "trouvé",
+   "start": 20.179,
+   "end": 20.516,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "un",
+   "start": 20.553,
+   "end": 20.741,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "secret",
+   "start": 20.762,
+   "end": 21.099,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "?",
+   "start": 21.136,
+   "end": 21.286,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "Abonne-toi",
+   "start": 21.303,
+   "end": 21.79,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "pour",
+   "start": 21.844,
+   "end": 22.106,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "ton",
+   "start": 22.135,
+   "end": 22.36,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "Flash",
+   "start": 22.385,
+   "end": 22.685,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "de",
+   "start": 22.718,
+   "end": 22.905,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "demain",
+   "start": 22.926,
+   "end": 23.263,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "matin",
+   "start": 23.301,
+   "end": 23.6,
+   "cle": false,
+   "seg": 3
+  },
+  {
+   "w": "!",
+   "start": 23.634,
+   "end": 23.783,
+   "cle": false,
+   "seg": 3
+  }
+ ],
+ "finVoix": 24.333,
+ "duree": 27.133
+}
