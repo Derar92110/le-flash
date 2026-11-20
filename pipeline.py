@@ -62,6 +62,70 @@ def charger_env():
     return env
 
 
+def _tts(texte, env, prev="", suiv="", reglages=None):
+    """Un appel ElevenLabs avec horodatage. prev/suiv : texte voisin (non lu, non facturé) pour garder
+    une intonation continue d'un segment à l'autre."""
+    import base64
+    cle = env.get("ELEVENLABS_API_KEY")
+    if not cle:
+        sys.exit("ELEVENLABS_API_KEY manquante")
+    voice = env.get("ELEVENLABS_VOICE_ID", "3Tp5mYhT9wrfnry9pzvV")
+    corps = {"text": texte, "model_id": env.get("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
+             "voice_settings": reglages}
+    if prev:
+        corps["previous_text"] = prev
+    if suiv:
+        corps["next_text"] = suiv
+    req = urllib.request.Request(
+        f"https://api.elevenlabs.io/v1/text-to-speech/{voice}/with-timestamps?output_format=mp3_44100_128",
+        data=json.dumps(corps).encode(), headers={"xi-api-key": cle, "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=300) as r:
+        rep = json.loads(r.read())
+    return base64.b64decode(rep["audio_base64"]), (rep.get("alignment") or rep.get("normalized_alignment"))
+
+
+def duree(fichier):
+    return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                          "-of", "csv=p=0", fichier]).decode().strip())
+
+
+def voix_off_segments(textes, sortie, env):
+    """Style motion (21/11, retour de Medley : voix saccadée) : une prise par segment, sans aucune balise
+    <break> dans le texte (elles cassent le souffle et l'intonation), avec le texte voisin pour la continuité.
+    Les pauses entre segments sont ajoutées au montage (silence), pas par la voix."""
+    reglages = {"stability": float(env.get("STABILITE_MOTION", "0.6")), "similarity_boost": 0.8,
+                "style": float(env.get("STYLE_VOIX_MOTION", "0.1")), "use_speaker_boost": True,
+                "speed": float(env.get("ELEVENLABS_SPEED", "1.0"))}
+    pause_s = float(env.get("PAUSE_SEGMENTS", "0.45"))
+    tmp = os.path.splitext(sortie)[0] + "_parts"
+    os.makedirs(tmp, exist_ok=True)
+    chars, st, en, t0, liste = [], [], [], 0.0, []
+    silence = os.path.join(tmp, "silence.wav")
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i",
+                           "anullsrc=r=44100:cl=mono", "-t", str(pause_s), silence])
+    for k, tx in enumerate(textes):
+        prev = " ".join(textes[max(0, k - 2):k])
+        suiv = textes[k + 1] if k + 1 < len(textes) else ""
+        audio, al = _tts(tx, env, prev, suiv, reglages)
+        mp3 = os.path.join(tmp, f"{k:02d}.mp3"); open(mp3, "wb").write(audio)
+        wav = os.path.join(tmp, f"{k:02d}.wav")
+        subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", mp3, "-ar", "44100", "-ac", "1", wav])
+        if k:
+            liste.append(silence); t0 += pause_s
+            chars.append(" "); st.append(t0 - pause_s); en.append(t0)
+        if al:
+            chars += al["characters"]
+            st += [x + t0 for x in al["character_start_times_seconds"]]
+            en += [x + t0 for x in al["character_end_times_seconds"]]
+        liste.append(wav); t0 += duree(wav)
+    lst = os.path.join(tmp, "liste.txt")
+    open(lst, "w").write("".join(f"file '{os.path.abspath(f)}'\n" for f in liste))
+    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", lst,
+                           "-c:a", "libmp3lame", "-b:a", "128k", sortie])
+    json.dump({"characters": chars, "character_start_times_seconds": st, "character_end_times_seconds": en},
+              open(os.path.splitext(sortie)[0] + ".json", "w", encoding="utf-8"))
+
+
 def voix_off(texte, sortie, env):
     """Voix ElevenLabs + horodatage mot par mot (voix/NNN.json) pour caler les sous-titres."""
     import base64
@@ -111,14 +175,14 @@ def main():
         if style:
             os.environ["STYLE"] = style  # make_short lit STYLE pour le style brut
         if s.get("segments") and not s.get("texte"):
-            if style == "motion":
-                # motion : une vraie respiration entre deux infos (voix moins précipitée)
-                s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.9")}s" /> '.join(respirer(g["texte"]) for g in s["segments"])
-            else:
-                s["texte"] = " ".join(g["texte"] for g in s["segments"])
+            s["texte"] = " ".join(g["texte"] for g in s["segments"])
         mp3 = d("voix", f"{i}.mp3")
         if not os.path.exists(mp3):
-            print(f"[{i}] voix off…"); voix_off(s["texte"].replace("*", ""), mp3, env_i)
+            print(f"[{i}] voix off…")
+            if style == "motion" and s.get("segments"):
+                voix_off_segments([g["texte"].replace("*", "") for g in s["segments"]], mp3, env_i)
+            else:
+                voix_off(s["texte"].replace("*", ""), mp3, env_i)
         clips = d("clips", s.get("clips", ""))  # sous-dossier optionnel par script (images + vidéos)
         print(f"[{i}] montage ({s.get('format', 'short')}, style {style or 'défaut'})…")
         if style == "motion" and s.get("format", "short") == "short":

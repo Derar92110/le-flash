@@ -1,0 +1,56 @@
+{
+  "format": "short",
+  "titre": "Aperçu voix motion",
+  "hook": "FLASH DU SOIR · JOUR 2",
+  "segments": [
+    {
+      "texte": "Édition du soir. Rockstar sort un album avec *Dua Lipa* et Lana Del Rey.",
+      "etiquette": "OFFICIEL",
+      "visuel": {
+        "type": "calendrier",
+        "jour": 20,
+        "mois": "nov.",
+        "legende": "Sortie de l'album GTA VI"
+      }
+    },
+    {
+      "titre": "L'album",
+      "texte": "Un : l'album officiel de GTA 6 compte *34 titres*. Il est sorti aujourd'hui.",
+      "etiquette": "OFFICIEL",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 34,
+        "unite": "titres",
+        "legende": "Grand Theft Auto VI: The Album"
+      }
+    },
+    {
+      "titre": "Crédits",
+      "texte": "Trois : 28 développeurs licenciés par Rockstar l'an dernier sont quand même dans les *crédits*. Et toi, t'écoutes quelle radio ?",
+      "etiquette": "",
+      "visuel": {
+        "type": "jauge",
+        "valeur": 82,
+        "legende": "28 des 34 licenciés cités dans les crédits"
+      }
+    }
+  ],
+  "description": "Le Flash du soir, 20 novembre 2026, JOUR 2 de GTA 6.\n\n1. Rockstar sort « Grand Theft Auto VI: The Album », 34 titres, le 20 novembre, avec notamment Lana Del Rey, Dua Lipa, Playboi Carti, JENNIE et Zara Larsson.\n2. Weird Al Yankovic prête sa voix à « DJ Al » sur la radio Vice City FM (Consequence, confirmé par Kotaku).\n3. Au moins 28 des 34 développeurs de Rockstar licenciés l'an dernier figurent dans les crédits du jeu, publiés le 19 novembre (Eurogamer). Le procès devant le tribunal du travail de Glasgow continue.",
+  "tags": [
+    "GTA 6",
+    "GTA VI",
+    "Grand Theft Auto 6",
+    "Le Flash",
+    "album GTA 6",
+    "radio GTA 6",
+    "Weird Al GTA 6"
+  ],
+  "hashtags": [
+    "#DuaLipa",
+    "#ViceCity"
+  ],
+  "sources": [
+    "Consequence, 20/11/2026 (album officiel, 34 titres ; Weird Al sur Vice City FM) : https://consequence.net/live-coverage/grand-theft-auto-vi/",
+    "VGTimes, 19/11/2026 citant Eurogamer (28 des 34 licenciés dans les crédits) : https://vgtimes.com/games/gta-6/news/"
+  ]
+}
