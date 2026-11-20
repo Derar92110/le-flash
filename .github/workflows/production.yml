@@ -56,8 +56,8 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           STYLE: ${{ vars.STYLE || 'alterne' }}                         # 20/11 : un Flash sur deux en motion (n° impairs), l'autre en brut ; STYLE=brut ou motion pour forcer
-          VOIX_MOTION: ${{ vars.VOIX_MOTION || 'nVPCtAFzgyMX3FZKNzH0' }}     # « Anna B » pour le motion design
-          VITESSE_MOTION: ${{ vars.VITESSE_MOTION || '1.0' }}
+          VOIX_MOTION: ${{ vars.VOIX_MOTION || 'SmWACbi37pETyxxMhSpc' }}     # 21/11 : « French Darling » (voix déjà validée par Medley) à la place d'Anna B
+          VITESSE_MOTION: ${{ vars.VITESSE_MOTION || '1.12' }}
           VOIX_BRUT: ${{ vars.VOIX_BRUT || 'SmWACbi37pETyxxMhSpc' }}         # « French Darling » pour le style brut
           VITESSE_BRUT: ${{ vars.VITESSE_BRUT || '1.12' }}
           AUTO_UPLOAD: "1"

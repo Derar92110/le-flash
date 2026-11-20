@@ -105,7 +105,7 @@ def voix_off_segments(textes, sortie, env):
                            "anullsrc=r=44100:cl=mono", "-t", str(pause_s), silence])
     for k, tx in enumerate(textes):
         prev = " ".join(textes[max(0, k - 2):k])
-        suiv = textes[k + 1] if k + 1 < len(textes) else ""
+        suiv = ""  # 21/11 : pas de texte suivant, sinon la voix garde un ton « suspendu » en fin de phrase
         audio, al = _tts(tx, env, prev, suiv, reglages)
         mp3 = os.path.join(tmp, f"{k:02d}.mp3"); open(mp3, "wb").write(audio)
         wav = os.path.join(tmp, f"{k:02d}.wav")
