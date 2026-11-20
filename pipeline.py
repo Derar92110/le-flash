@@ -11,12 +11,28 @@ Configuration : fichier .env à côté de ce script (créé par installer.bat de
 Usage : python pipeline.py            (traite tout)
         python pipeline.py 004        (un seul script)
 """
-import json, os, subprocess, sys, urllib.request
+import json, os, re, subprocess, sys, urllib.request
 
 ICI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ICI)
 import make_short  # noqa: E402
 
+
+
+def pause(sec):
+    return f' <break time="{sec}s" /> '
+
+
+def respirer(texte):
+    """Pauses naturelles dans un segment (style motion) : après « Un : », entre les phrases, avant l'appel à l'action."""
+    t = texte.strip()
+    # « Un : », « Deux : », « Dernier point : »… on marque le temps avant l'info
+    t = re.sub(r"^((?:Un|Deux|Trois|Quatre|Cinq|Premier point|Dernier point|Bonus)\s*:)\s*", lambda m: m.group(1) + pause(0.45), t, flags=re.I)
+    # appel à l'action : une respiration plus longue avant
+    t = re.sub(r"([.!?…])\s+(?=(?:Et toi|Et vous|Abonne|Dis-moi|Dites-moi))", lambda m: m.group(1) + pause(0.6), t)
+    # entre deux phrases du même point
+    t = re.sub(r"([.!?…])\s+(?=[A-ZÀ-ÖØ-Þ*])", lambda m: m.group(1) + pause(0.35), t)
+    return t
 
 def charger_env():
     env = dict(os.environ)  # GitHub Actions : secrets passés en variables d environnement
@@ -78,7 +94,7 @@ def main():
         if s.get("segments") and not s.get("texte"):
             if (s.get("style") or env.get("STYLE") or "").lower() == "motion":
                 # motion : une vraie respiration entre deux infos (voix moins précipitée)
-                s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.5")}s" /> '.join(g["texte"] for g in s["segments"])
+                s["texte"] = f' <break time="{env.get("PAUSE_SEGMENTS", "0.9")}s" /> '.join(respirer(g["texte"]) for g in s["segments"])
             else:
                 s["texte"] = " ".join(g["texte"] for g in s["segments"])
         mp3 = d("voix", f"{i}.mp3")
