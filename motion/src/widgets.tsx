@@ -239,6 +239,36 @@ const Prix: React.FC<{ v: Extract<Visuel, { type: "prix" }>; th: Theme }> = ({ v
   );
 };
 
+// ---------- viseur caméra (coins, REC, timecode) posé sur les médias ----------
+const Viseur: React.FC<{ rec?: boolean }> = ({ rec = true }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const o = interpolate(f, [4, 16], [0, 1], clamp);
+  const ecart = interpolate(f, [4, 18], [40, 0], { ...clamp, easing: Easing.out(Easing.cubic) });
+  const s = Math.floor(f / fps), im = f % fps;
+  const tc = `00:00:${String(s).padStart(2, "0")}:${String(im).padStart(2, "0")}`;
+  const coin = (pos: React.CSSProperties, b: string): React.ReactNode => (
+    <div style={{ position: "absolute", width: 70, height: 70, ...pos, [b.split(" ")[0]]: "5px solid #fff", [b.split(" ")[1]]: "5px solid #fff",
+      filter: "drop-shadow(0 0 8px rgba(120,170,255,0.9))" }} />
+  );
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: o, fontFamily: POLICE, color: "#fff" }}>
+      {coin({ left: 22 - ecart, top: 22 - ecart }, "borderLeft borderTop")}
+      {coin({ right: 22 - ecart, top: 22 - ecart }, "borderRight borderTop")}
+      {coin({ left: 22 - ecart, bottom: 22 - ecart }, "borderLeft borderBottom")}
+      {coin({ right: 22 - ecart, bottom: 22 - ecart }, "borderRight borderBottom")}
+      {rec && <div style={{ position: "absolute", right: 46, top: 40, display: "flex", alignItems: "center", gap: 10, fontWeight: 800, fontSize: 24, letterSpacing: 2 }}>
+        <div style={{ width: 16, height: 16, borderRadius: 8, background: "#ff2d3d", opacity: Math.floor(f / 12) % 2 ? 0.25 : 1 }} />REC</div>}
+      <div style={{ position: "absolute", right: 46, bottom: 40, fontWeight: 700, fontSize: 22, letterSpacing: 2, opacity: 0.85 }}>{tc}</div>
+      <div style={{ position: "absolute", left: "50%", top: "50%", width: 46, height: 46, marginLeft: -23, marginTop: -23, opacity: 0.6 }}>
+        <div style={{ position: "absolute", left: 21, top: 0, width: 4, height: 46, background: "#fff" }} />
+        <div style={{ position: "absolute", top: 21, left: 0, height: 4, width: 46, background: "#fff" }} />
+      </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: `${(f * 2.2) % 120 - 10}%`, height: 3, background: "rgba(255,255,255,0.12)" }} />
+    </div>
+  );
+};
+
 // ---------- image du jeu dans une carte ----------
 const ImageJeu: React.FC<{ v: Extract<Visuel, { type: "image" }>; th: Theme; duree: number }> = ({ v, th, duree }) => {
   const f = useCurrentFrame();
@@ -251,6 +281,7 @@ const ImageJeu: React.FC<{ v: Extract<Visuel, { type: "image" }>; th: Theme; dur
         position: "relative", background: "#0b1440" }}>
         <Img src={staticFile(v.src)} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${z}) translateX(${x}px)` }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 55%, rgba(5,8,30,0.55))" }} />
+        <Viseur />
         <div style={{ position: "absolute", left: 30, bottom: 26, display: "flex", alignItems: "center", gap: 14, color: "#fff",
           fontFamily: POLICE, fontWeight: 700, fontSize: 28 }}>
           <div style={{ width: 52, height: 52, borderRadius: 26, background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center",
@@ -279,6 +310,7 @@ const VideoJeu: React.FC<{ v: Extract<Visuel, { type: "video" }>; th: Theme; dur
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(5,8,30,0.15), transparent 40%, rgba(5,8,30,0.55))" }} />
         <div style={{ position: "absolute", top: 0, bottom: 0, left: `${balaie}%`, width: "22%", transform: "skewX(-18deg)",
           background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)" }} />
+        <Viseur rec={false} />
         <div style={{ position: "absolute", top: 24, left: 26, display: "flex", alignItems: "center", gap: 10, background: "rgba(255,45,61,0.92)",
           color: "#fff", fontFamily: POLICE, fontWeight: 800, fontSize: 24, letterSpacing: 2, borderRadius: 999, padding: "6px 16px" }}>
           <div style={{ width: 10, height: 10, borderRadius: 5, background: "#fff", opacity: 0.4 + 0.6 * Math.abs(Math.sin(f / 8)) }} />EN JEU

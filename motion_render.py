@@ -281,8 +281,29 @@ def construire_props(script_path, voix=None, total=None):
                          "visuel": g["visuel"], "fond": g.get("fond"),
                          "start": 0 if i == 0 else round(max(0, ms[0]["start"] - 0.12), 3) if ms else 0,
                          "end": ms[-1]["end"] if ms else fin_voix})
-    return {"hook": s.get("hook", "LE FLASH"), "segments": segments, "mots": liste,
+    return {"hook": s.get("hook", "LE FLASH"), "segments": segments, "mots": liste, "mur": mur_images(),
             "finVoix": round(fin_voix + 0.25, 3), "duree": round(fin_voix + 0.25 + OUTRO, 3)}
+
+
+def mur_images(n=14):
+    """Petites vignettes des captures officielles pour le mur 3D de l'ouverture (public/mur/)."""
+    imgs = images_dispo()
+    if not imgs:
+        return []
+    d = os.path.join(PUBLIC, "mur")
+    shutil.rmtree(d, ignore_errors=True); os.makedirs(d)
+    rnd = random.Random(len(imgs))
+    choix = rnd.sample(imgs, min(n, len(imgs)))
+    res = []
+    for k, src in enumerate(choix):
+        nom = f"mur/{k:02d}.jpg"
+        try:
+            subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", src, "-vf", "scale=480:-2", "-q:v", "4",
+                                   os.path.join(PUBLIC, nom)])
+            res.append(nom)
+        except Exception:
+            pass
+    return res
 
 
 def choisir_musique():

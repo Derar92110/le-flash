@@ -21,7 +21,7 @@ const sinT = (f: number, periode: number, phase = 0) => Math.sin((f / periode) *
 const ORDRE: (keyof typeof THEMES)[] = ["nuit", "bleu", "clair"];
 const CENTRE_WIDGET = 1240; // y du centre du widget
 const TRANSITION = 14; // images
-const TRANSITIONS = ["disque", "zoom", "flou"] as const;
+const TRANSITIONS = ["disque", "zoom", "glisse", "flou"] as const;
 type TypeTransition = (typeof TRANSITIONS)[number] | "aucune";
 
 // pseudo-aléatoire stable (même rendu à chaque image)
@@ -143,9 +143,15 @@ const MotAnime: React.FC<{ m: Mot; t0: number; th: Theme }> = ({ m, t0, th }) =>
   return (
     <span style={{ display: "inline-block", maxWidth: place * 900, marginRight: `${0.26 * place}em`, whiteSpace: "nowrap" }}>
       <span style={{ position: "relative", display: "inline-block", opacity: a, filter: `blur(${(1 - a) * 16}px)`,
-        transform: `translateY(${(1 - a) * 26}px) scale(${m.cle ? 1 + 0.12 * (1 - a) : 1})`, color: m.cle ? th.cle : th.texte,
-        textShadow: lueur ? `0 0 ${30 * lueur}px ${th.cle}` : undefined }}>
-        {m.w}
+        transform: `perspective(600px) rotateX(${(1 - a) * -75}deg) translateY(${(1 - a) * 26}px) scale(${m.cle ? 1 + 0.18 * (1 - a) : 1})`,
+        transformOrigin: "50% 100%", color: m.cle ? th.cle : th.texte,
+        textShadow: lueur && !m.cle ? `0 0 ${30 * lueur}px ${th.cle}` : undefined }}>
+        {m.cle ? (
+          <span style={{ backgroundImage: `linear-gradient(100deg, ${th.cle} 0%, ${th.cle} 35%, #ffffff 50%, ${th.cle} 65%, ${th.cle} 100%)`,
+            backgroundSize: "300% 100%", backgroundPosition: `${100 - ((f - fm) * 3) % 200}% 0`,
+            WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent",
+            filter: `drop-shadow(0 0 ${8 + 22 * lueur}px ${th.cle})` }}>{m.w}</span>
+        ) : m.w}
         {m.cle && (
           <span style={{ position: "absolute", left: 0, bottom: "0.02em", height: "0.075em", width: `${trait}%`,
             background: th.cle, borderRadius: 4, boxShadow: `0 0 16px ${th.cle}` }} />
@@ -202,8 +208,80 @@ const EchoMots: React.FC<{ mots: Mot[]; t0: number; th: Theme }> = ({ mots, t0, 
   );
 };
 
+// ---------- ouverture : mur 3D d'images du jeu survolé par la caméra ----------
+const MurImages: React.FC<{ mur: string[]; duree: number }> = ({ mur, duree }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = interpolate(f, [0, duree * fps], [0, 1], clamp);
+  const arrivee = interpolate(f, [0, 40], [0, 1], { ...clamp, easing: doux });
+  const COLS = 7, LIGNES = 12, W = 330, H = 186, G = 22;
+  return (
+    <AbsoluteFill style={{ overflow: "hidden", background: "#03051a" }}>
+      <div style={{ position: "absolute", left: 540 - (COLS * (W + G)) / 2, top: 960 - (LIGNES * (H + G)) / 2,
+        width: COLS * (W + G), height: LIGNES * (H + G), transformStyle: "preserve-3d",
+        transform: `perspective(1100px) rotateX(${interpolate(arrivee, [0, 1], [8, 48]) - p * 8}deg) rotateZ(${-18 + p * 6}deg) ` +
+          `translateY(${-p * 420}px) translateZ(${interpolate(arrivee, [0, 1], [500, 0])}px) scale(${1.15 + p * 0.15})` }}>
+        {Array.from({ length: COLS * LIGNES }).map((_, k) => {
+          const c = k % COLS, l = Math.floor(k / COLS);
+          const src = mur[(k * 5 + l) % mur.length];
+          const lum = 0.35 + hasard(k) * 0.5 + 0.25 * Math.max(0, Math.sin(f / 9 + k));
+          const pop = interpolate(f - hasard(k + 9) * 18, [0, 10], [0, 1], { ...clamp, easing: doux });
+          return (
+            <div key={k} style={{ position: "absolute", left: c * (W + G), top: l * (H + G), width: W, height: H, borderRadius: 18,
+              overflow: "hidden", opacity: pop, transform: `translateZ(${(1 - pop) * 200 + hasard(k + 3) * 40}px)`,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.5)", border: "2px solid rgba(140,170,255,0.25)" }}>
+              <Img src={staticFile(src)} style={{ width: "100%", height: "100%", objectFit: "cover", filter: `brightness(${lum}) saturate(1.2)` }} />
+            </div>
+          );
+        })}
+      </div>
+      <AbsoluteFill style={{ background: "radial-gradient(70% 45% at 50% 42%, rgba(8,14,60,0.55), rgba(3,5,26,0.92) 100%)" }} />
+    </AbsoluteFill>
+  );
+};
+
+// ---------- fond vivant : nappes de couleur qui se déplacent ----------
+const NappesCouleur: React.FC<{ clair: boolean; graine: number }> = ({ clair, graine }) => {
+  const f = useCurrentFrame();
+  const nappes = clair ? ["#9db4ff", "#c7b8ff", "#8fe3ff"] : ["#2b5cff", "#7a3cff", "#12c8ff"];
+  return (
+    <AbsoluteFill style={{ mixBlendMode: clair ? "multiply" : "screen", opacity: clair ? 0.35 : 0.4, pointerEvents: "none" }}>
+      {nappes.map((c, i) => (
+        <div key={i} style={{ position: "absolute", width: 1100, height: 1100, borderRadius: "50%",
+          left: 540 - 550 + sinT(f + graine * 50, 200 + i * 60, i * 2) * 380, top: 960 - 550 + sinT(f + graine * 50, 260 + i * 40, i) * 620,
+          background: `radial-gradient(circle, ${c} 0%, transparent 65%)` }} />
+      ))}
+    </AbsoluteFill>
+  );
+};
+
+// ---------- VFX : explosion de particules + onde de choc ----------
+const Eclat: React.FC<{ x: number; y: number; couleur: string; n?: number; taille?: number }> = ({ x, y, couleur, n = 18, taille = 1 }) => {
+  const f = useCurrentFrame();
+  const p = interpolate(f, [0, 22], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+  if (f > 26) return null;
+  return (
+    <div style={{ position: "absolute", left: x, top: y, width: 0, height: 0, pointerEvents: "none" }}>
+      {[0, 1].map((r) => {
+        const q = interpolate(f - r * 4, [0, 18], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+        const d = 120 + q * 520 * taille;
+        return <div key={r} style={{ position: "absolute", left: -d / 2, top: -d / 2, width: d, height: d, borderRadius: "50%",
+          border: `${6 - r * 3}px solid ${couleur}`, opacity: (1 - q) * 0.8, boxShadow: `0 0 30px ${couleur}` }} />;
+      })}
+      {Array.from({ length: n }).map((_, i) => {
+        const ang = (i / n) * Math.PI * 2 + hasard(i) * 0.4;
+        const dist = (160 + hasard(i + 4) * 260) * taille * p;
+        const t = 6 + hasard(i + 8) * 10;
+        return <div key={i} style={{ position: "absolute", left: Math.cos(ang) * dist - t / 2, top: Math.sin(ang) * dist - t / 2,
+          width: t, height: t, borderRadius: t, background: i % 3 ? "#ffffff" : couleur, opacity: 1 - p,
+          boxShadow: `0 0 ${t * 2}px ${couleur}` }} />;
+      })}
+    </div>
+  );
+};
+
 // ---------- une scène = un segment du script ----------
-const Scene: React.FC<{ seg: Segment; index: number; mots: Mot[]; th: Theme; clair: boolean; fin: number; transition: TypeTransition }> = ({ seg, index, mots, th, clair, fin, transition }) => {
+const Scene: React.FC<{ seg: Segment; index: number; mots: Mot[]; th: Theme; clair: boolean; fin: number; transition: TypeTransition; mur?: string[] }> = ({ seg, index, mots, th, clair, fin, transition, mur }) => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = seg.start + f / fps;
@@ -216,7 +294,10 @@ const Scene: React.FC<{ seg: Segment; index: number; mots: Mot[]; th: Theme; cla
   }, 0);
   const secX = Math.sin(f * 2.7) * 7 * choc, secY = Math.cos(f * 3.1) * 5 * choc;
   const zoom = interpolate(f, [0, duree * fps], [1, 1.07], clamp) + choc * 0.04;
-  const derive = `translate(${sinT(f, 210) * 10 + secX}px, ${sinT(f, 260, 1) * 12 + secY}px) rotate(${sinT(f, 340) * 0.5}deg) scale(${zoom})`;
+  const derive = `translate(${secX}px, ${secY}px) rotate(${sinT(f, 340) * 0.5}deg) scale(${zoom})`;
+  // caméra virtuelle : chaque couche glisse à sa vitesse (profondeur)
+  const camX = sinT(f + index * 37, 230) * 1, camY = sinT(f + index * 37, 300, 1) * 1;
+  const couche = (k: number): React.CSSProperties => ({ transform: `translate(${camX * k}px, ${camY * k * 0.8}px)` });
   const tilt = `perspective(1800px) rotateX(${sinT(f, 150) * 5}deg) rotateY(${sinT(f, 190, 1) * 7}deg)`;
   const R = interpolate(f, [0, TRANSITION], [0, 2300], { ...clamp, easing: Easing.bezier(0.7, 0, 0.3, 1) });
   const fl = interpolate(f, [0, 12], [1, 0], { ...clamp, easing: doux });
@@ -224,26 +305,44 @@ const Scene: React.FC<{ seg: Segment; index: number; mots: Mot[]; th: Theme; cla
     transition === "disque" ? { clipPath: `circle(${R}px at 540px ${CENTRE_WIDGET}px)` }
     : transition === "flou" ? { opacity: 1 - fl, filter: `blur(${fl * 30}px)`, transform: `scale(${1 + fl * 0.12})` }
     : transition === "zoom" ? { opacity: Math.min(1, (1 - fl) * 2), filter: `blur(${fl * 22}px)`, transform: `scale(${1 + fl * 0.6}) rotate(${fl * -4}deg)` }
+    : transition === "glisse" ? { transform: `translateY(${fl * 1920}px) rotate(${fl * 6}deg)`, filter: `blur(${fl * 16}px)` }
     : {};
   const etiq = (seg.etiquette || "").toUpperCase();
   const visuel = seg.visuel || { type: "carte" as const, titre: seg.titre || "" };
+  const ouverture = index === 0 && mur && mur.length > 0;
+  const atterrissage = Math.round(0.45 * fps); // moment où le widget se pose
+  const clesDebut = mots.filter((m, k) => m.cle && !mots[k - 1]?.cle);
   return (
     <AbsoluteFill style={style}>
       <AbsoluteFill style={{ background: th.fond, transform: derive }}>
-        {seg.fond && <FondMedia fond={seg.fond} th={th} duree={duree} clair={clair} />}
+        <AbsoluteFill style={couche(-14)}>
+          {ouverture ? <MurImages mur={mur!} duree={duree} />
+            : seg.fond && <FondMedia fond={seg.fond} th={th} duree={duree} clair={clair} />}
+        </AbsoluteFill>
+        <NappesCouleur clair={clair} graine={index} />
         <FuitesLumiere graine={index} force={clair ? 0.5 : 1} />
-        <EchoMots mots={mots} t0={seg.start} th={th} />
-        <Decor th={th} graine={index} />
-        <Particules couleur={clair ? "#7f9cff" : "#cfe0ff"} />
-        <TexteCinetique mots={mots} t0={seg.start} th={th} />
-        <div style={{ position: "absolute", left: 0, right: 0, top: CENTRE_WIDGET - 380, height: 760, display: "flex",
-          flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 34 }}>
-          {etiq && <Pastille etiquette={etiq} delai={8} />}
-          <div style={{ transform: `${tilt} translateY(${(1 - entree) * 140 + sinT(f, 90) * 10}px) scale(${0.82 + 0.18 * entree})`,
-            opacity: entree, filter: `blur(${(1 - entree) * 18}px)` }}>
-            <Widget v={visuel} th={th} duree={duree} />
+        <AbsoluteFill style={couche(-6)}><EchoMots mots={mots} t0={seg.start} th={th} /></AbsoluteFill>
+        <AbsoluteFill style={couche(-24)}><Decor th={th} graine={index} /></AbsoluteFill>
+        <AbsoluteFill style={couche(-34)}><Particules couleur={clair ? "#7f9cff" : "#cfe0ff"} /></AbsoluteFill>
+        <AbsoluteFill style={couche(8)}><TexteCinetique mots={mots} t0={seg.start} th={th} /></AbsoluteFill>
+        <AbsoluteFill style={couche(16)}>
+          <div style={{ position: "absolute", left: 0, right: 0, top: CENTRE_WIDGET - 380, height: 760, display: "flex",
+            flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 34 }}>
+            {etiq && <Pastille etiquette={etiq} delai={8} />}
+            <div style={{ transform: `${tilt} translateY(${(1 - entree) * 140 + sinT(f, 90) * 10}px) scale(${0.82 + 0.18 * entree})`,
+              opacity: entree, filter: `blur(${(1 - entree) * 18}px)` }}>
+              <Widget v={visuel} th={th} duree={duree} />
+            </div>
           </div>
-        </div>
+          <Sequence from={atterrissage} durationInFrames={28} layout="none">
+            <Eclat x={540} y={CENTRE_WIDGET} couleur={clair ? BLEU : "#8fb0ff"} />
+          </Sequence>
+        </AbsoluteFill>
+        {clesDebut.map((m, k) => (
+          <Sequence key={k} from={Math.max(0, Math.round((m.start - seg.start) * fps))} durationInFrames={28} layout="none">
+            <Eclat x={540} y={700} couleur={th.cle} n={12} taille={0.7} />
+          </Sequence>
+        ))}
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -339,7 +438,7 @@ export const Flash: React.FC<FlashProps> = (p) => {
         return (
           <Sequence key={i} from={debut} durationInFrames={Math.max(1, finF - debut)}>
             <Scene seg={{ ...s, start: debut / fps }} index={i} th={THEMES[nomTheme]} clair={nomTheme === "clair"} fin={fin}
-              mots={p.mots.filter((m) => m.seg === i)} transition={i === 0 ? "aucune" : TRANSITIONS[(i - 1) % 3]} />
+              mots={p.mots.filter((m) => m.seg === i)} transition={i === 0 ? "aucune" : TRANSITIONS[(i - 1) % TRANSITIONS.length]} mur={p.mur} />
           </Sequence>
         );
       })}

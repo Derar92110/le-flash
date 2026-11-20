@@ -36,6 +36,7 @@ export type FlashProps = {
   hook: string;
   segments: Segment[];
   mots: Mot[];
+  mur?: string[]; // vignettes du jeu pour le mur 3D d'ouverture
   duree: number; // secondes, outro comprise
   finVoix: number; // secondes : début de l'outro
   voix?: string; // fichier dans public/
