@@ -12,19 +12,30 @@
     "unite": "estimation Sensor Tower"
    },
    "start": 0,
-   "end": 3.942
+   "end": 4.259
   },
   {
    "titre": "Milliard",
-   "texte": "Un : selon Sensor Tower, les précommandes numériques dépassent le milliard. Take-Two n'a encore rien confirmé.",
+   "texte": "Un : selon Sensor Tower, les précommandes numériques dépassent le milliard.",
    "etiquette": "",
    "visuel": {
     "type": "carte",
     "titre": "11 à 17 millions",
     "sous": "de précommandes numériques (estimation)"
    },
-   "start": 3.868,
-   "end": 9.89
+   "start": 4.189,
+   "end": 8.679
+  },
+  {
+   "titre": "",
+   "texte": "Take-Two n'a encore rien confirmé.",
+   "etiquette": "",
+   "visuel": {
+    "type": "image",
+    "src": "images/02.jpg"
+   },
+   "start": 8.613,
+   "end": 10.711
   },
   {
    "titre": "Clin d'œil Dexter",
@@ -34,552 +45,562 @@
     "type": "image",
     "cherche": "vice beach",
     "legende": "Vice Beach",
-    "src": "images/02.jpg"
+    "src": "images/03.jpg"
    },
-   "start": 9.82,
-   "end": 15.267
+   "start": 10.645,
+   "end": 16.544
   },
   {
    "titre": "Image de 2021",
-   "texte": "Trois : une maison cachée dans San Andreas en 2021 existe dans GTA 6. Et toi, t'as trouvé un secret ? Abonne-toi pour ton Flash de demain matin !",
+   "texte": "Trois : une maison cachée dans San Andreas en 2021 existe dans GTA 6.",
    "etiquette": "",
    "visuel": {
     "type": "image",
     "cherche": "belville",
     "legende": "San Andreas, 2021",
-    "src": "images/03.jpg"
+    "src": "images/04.jpg"
    },
-   "start": 15.189,
-   "end": 23.783
+   "start": 16.469,
+   "end": 20.992
+  },
+  {
+   "titre": "",
+   "texte": "Et toi, t'as trouvé un secret ? Abonne-toi pour ton Flash de demain matin !",
+   "etiquette": "",
+   "visuel": {
+    "type": "question"
+   },
+   "start": 20.894,
+   "end": 25.782
   }
  ],
  "mots": [
   {
    "w": "Édition",
    "start": 0.2,
-   "end": 0.575,
+   "end": 0.606,
    "cle": false,
    "seg": 0
   },
   {
    "w": "du",
-   "start": 0.616,
-   "end": 0.804,
+   "start": 0.651,
+   "end": 0.855,
    "cle": false,
    "seg": 0
   },
   {
    "w": "soir.",
-   "start": 0.824,
-   "end": 1.124,
+   "start": 0.877,
+   "end": 1.202,
    "cle": false,
    "seg": 0
   },
   {
    "w": "GTA",
-   "start": 1.157,
-   "end": 1.382,
+   "start": 1.238,
+   "end": 1.482,
    "cle": false,
    "seg": 0
   },
   {
    "w": "6",
-   "start": 1.407,
-   "end": 1.557,
+   "start": 1.509,
+   "end": 1.672,
    "cle": false,
    "seg": 0
   },
   {
    "w": "aurait",
-   "start": 1.574,
-   "end": 1.911,
+   "start": 1.69,
+   "end": 2.056,
    "cle": false,
    "seg": 0
   },
   {
    "w": "déjà",
-   "start": 1.948,
-   "end": 2.21,
+   "start": 2.096,
+   "end": 2.381,
    "cle": false,
    "seg": 0
   },
   {
    "w": "dépassé",
-   "start": 2.24,
-   "end": 2.614,
+   "start": 2.412,
+   "end": 2.819,
    "cle": false,
    "seg": 0
   },
   {
    "w": "un",
-   "start": 2.656,
-   "end": 2.843,
+   "start": 2.864,
+   "end": 3.067,
    "cle": true,
    "seg": 0
   },
   {
    "w": "milliard",
-   "start": 2.864,
-   "end": 3.276,
+   "start": 3.09,
+   "end": 3.537,
    "cle": true,
    "seg": 0
   },
   {
    "w": "de",
-   "start": 3.322,
-   "end": 3.509,
+   "start": 3.586,
+   "end": 3.789,
    "cle": false,
    "seg": 0
   },
   {
    "w": "dollars.",
-   "start": 3.53,
-   "end": 3.942,
+   "start": 3.812,
+   "end": 4.259,
    "cle": false,
    "seg": 0
   },
   {
    "w": "Un",
-   "start": 3.988,
-   "end": 4.175,
+   "start": 4.309,
+   "end": 4.512,
    "cle": false,
    "seg": 1
   },
   {
    "w": ":",
-   "start": 4.196,
-   "end": 4.346,
+   "start": 4.534,
+   "end": 4.697,
    "cle": false,
    "seg": 1
   },
   {
    "w": "selon",
-   "start": 4.362,
-   "end": 4.662,
+   "start": 4.715,
+   "end": 5.04,
    "cle": false,
    "seg": 1
   },
   {
    "w": "Sensor",
-   "start": 4.695,
-   "end": 5.032,
+   "start": 5.076,
+   "end": 5.442,
    "cle": false,
    "seg": 1
   },
   {
    "w": "Tower,",
-   "start": 5.07,
-   "end": 5.407,
+   "start": 5.483,
+   "end": 5.848,
    "cle": false,
    "seg": 1
   },
   {
    "w": "les",
-   "start": 5.444,
-   "end": 5.669,
+   "start": 5.889,
+   "end": 6.133,
    "cle": false,
    "seg": 1
   },
   {
    "w": "précommandes",
-   "start": 5.694,
-   "end": 6.256,
+   "start": 6.16,
+   "end": 6.769,
    "cle": false,
    "seg": 1
   },
   {
    "w": "numériques",
-   "start": 6.319,
-   "end": 6.806,
+   "start": 6.837,
+   "end": 7.365,
    "cle": false,
    "seg": 1
   },
   {
    "w": "dépassent",
-   "start": 6.86,
-   "end": 7.309,
+   "start": 7.424,
+   "end": 7.912,
    "cle": false,
    "seg": 1
   },
   {
    "w": "le",
-   "start": 7.359,
-   "end": 7.546,
+   "start": 7.966,
+   "end": 8.169,
    "cle": false,
    "seg": 1
   },
   {
    "w": "milliard.",
-   "start": 7.567,
-   "end": 8.017,
+   "start": 8.192,
+   "end": 8.679,
    "cle": false,
    "seg": 1
   },
   {
    "w": "Take-Two",
-   "start": 8.067,
-   "end": 8.479,
+   "start": 8.733,
+   "end": 9.18,
    "cle": false,
-   "seg": 1
+   "seg": 2
   },
   {
    "w": "n'a",
-   "start": 8.525,
-   "end": 8.749,
+   "start": 9.23,
+   "end": 9.474,
    "cle": false,
-   "seg": 1
+   "seg": 2
   },
   {
    "w": "encore",
-   "start": 8.774,
-   "end": 9.111,
+   "start": 9.501,
+   "end": 9.867,
    "cle": false,
-   "seg": 1
+   "seg": 2
   },
   {
    "w": "rien",
-   "start": 9.149,
-   "end": 9.411,
+   "start": 9.907,
+   "end": 10.192,
    "cle": false,
-   "seg": 1
+   "seg": 2
   },
   {
    "w": "confirmé.",
-   "start": 9.44,
-   "end": 9.89,
+   "start": 10.223,
+   "end": 10.711,
    "cle": false,
-   "seg": 1
+   "seg": 2
   },
   {
    "w": "Deux",
-   "start": 9.94,
-   "end": 10.202,
+   "start": 10.765,
+   "end": 11.05,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": ":",
-   "start": 10.231,
-   "end": 10.381,
+   "start": 11.081,
+   "end": 11.244,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "des",
-   "start": 10.398,
-   "end": 10.622,
+   "start": 11.262,
+   "end": 11.506,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "joueurs",
-   "start": 10.647,
-   "end": 11.022,
+   "start": 11.533,
+   "end": 11.939,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "ont",
-   "start": 11.063,
-   "end": 11.288,
+   "start": 11.984,
+   "end": 12.228,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "trouvé",
-   "start": 11.313,
-   "end": 11.65,
+   "start": 12.255,
+   "end": 12.621,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "l'immeuble",
-   "start": 11.688,
-   "end": 12.175,
+   "start": 12.661,
+   "end": 13.19,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "de",
-   "start": 12.229,
-   "end": 12.416,
+   "start": 13.248,
+   "end": 13.451,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "Dexter",
-   "start": 12.437,
-   "end": 12.774,
+   "start": 13.474,
+   "end": 13.84,
    "cle": true,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "à",
-   "start": 12.812,
-   "end": 12.961,
+   "start": 13.88,
+   "end": 14.043,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "Vice",
-   "start": 12.978,
-   "end": 13.24,
+   "start": 14.061,
+   "end": 14.345,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "Beach,",
-   "start": 13.269,
-   "end": 13.607,
+   "start": 14.377,
+   "end": 14.743,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "avec",
-   "start": 13.644,
-   "end": 13.906,
+   "start": 14.783,
+   "end": 15.068,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "son",
-   "start": 13.935,
-   "end": 14.16,
+   "start": 15.099,
+   "end": 15.343,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "kit",
-   "start": 14.185,
-   "end": 14.41,
+   "start": 15.37,
+   "end": 15.614,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "et",
-   "start": 14.435,
-   "end": 14.622,
+   "start": 15.641,
+   "end": 15.844,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "son",
-   "start": 14.643,
-   "end": 14.868,
+   "start": 15.867,
+   "end": 16.111,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "bateau.",
-   "start": 14.893,
-   "end": 15.267,
+   "start": 16.138,
+   "end": 16.544,
    "cle": false,
-   "seg": 2
+   "seg": 3
   },
   {
    "w": "Trois",
-   "start": 15.309,
-   "end": 15.609,
+   "start": 16.589,
+   "end": 16.914,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": ":",
-   "start": 15.642,
-   "end": 15.792,
+   "start": 16.951,
+   "end": 17.113,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "une",
-   "start": 15.808,
-   "end": 16.033,
+   "start": 17.131,
+   "end": 17.375,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "maison",
-   "start": 16.058,
-   "end": 16.395,
+   "start": 17.402,
+   "end": 17.768,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "cachée",
-   "start": 16.433,
-   "end": 16.77,
+   "start": 17.808,
+   "end": 18.174,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "dans",
-   "start": 16.807,
-   "end": 17.07,
+   "start": 18.215,
+   "end": 18.499,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "San",
-   "start": 17.099,
-   "end": 17.324,
+   "start": 18.531,
+   "end": 18.775,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "Andreas",
-   "start": 17.349,
-   "end": 17.723,
+   "start": 18.802,
+   "end": 19.208,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "en",
-   "start": 17.765,
-   "end": 17.952,
+   "start": 19.253,
+   "end": 19.456,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "2021",
-   "start": 17.973,
-   "end": 18.235,
+   "start": 19.479,
+   "end": 19.763,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "existe",
-   "start": 18.264,
-   "end": 18.601,
+   "start": 19.795,
+   "end": 20.161,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "dans",
-   "start": 18.639,
-   "end": 18.901,
+   "start": 20.201,
+   "end": 20.486,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "GTA",
-   "start": 18.93,
-   "end": 19.155,
+   "start": 20.517,
+   "end": 20.761,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "6.",
-   "start": 19.18,
-   "end": 19.367,
+   "start": 20.788,
+   "end": 20.992,
    "cle": false,
-   "seg": 3
+   "seg": 4
   },
   {
    "w": "Et",
-   "start": 19.388,
-   "end": 19.575,
+   "start": 21.014,
+   "end": 21.217,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "toi,",
-   "start": 19.596,
-   "end": 19.858,
+   "start": 21.24,
+   "end": 21.524,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "t'as",
-   "start": 19.887,
-   "end": 20.15,
+   "start": 21.556,
+   "end": 21.84,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "trouvé",
-   "start": 20.179,
-   "end": 20.516,
+   "start": 21.872,
+   "end": 22.238,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "un",
-   "start": 20.553,
-   "end": 20.741,
+   "start": 22.278,
+   "end": 22.481,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "secret",
-   "start": 20.762,
-   "end": 21.099,
+   "start": 22.504,
+   "end": 22.87,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "?",
-   "start": 21.136,
-   "end": 21.286,
+   "start": 22.91,
+   "end": 23.073,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "Abonne-toi",
-   "start": 21.303,
-   "end": 21.79,
+   "start": 23.091,
+   "end": 23.619,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "pour",
-   "start": 21.844,
-   "end": 22.106,
+   "start": 23.678,
+   "end": 23.962,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "ton",
-   "start": 22.135,
-   "end": 22.36,
+   "start": 23.994,
+   "end": 24.238,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "Flash",
-   "start": 22.385,
-   "end": 22.685,
+   "start": 24.265,
+   "end": 24.59,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "de",
-   "start": 22.718,
-   "end": 22.905,
+   "start": 24.626,
+   "end": 24.829,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "demain",
-   "start": 22.926,
-   "end": 23.263,
+   "start": 24.852,
+   "end": 25.218,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "matin",
-   "start": 23.301,
-   "end": 23.6,
+   "start": 25.258,
+   "end": 25.583,
    "cle": false,
-   "seg": 3
+   "seg": 5
   },
   {
    "w": "!",
-   "start": 23.634,
-   "end": 23.783,
+   "start": 25.619,
+   "end": 25.782,
    "cle": false,
-   "seg": 3
+   "seg": 5
   }
  ],
- "finVoix": 24.333,
- "duree": 27.133
+ "finVoix": 26.332,
+ "duree": 29.132
 }

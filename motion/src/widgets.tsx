@@ -286,6 +286,36 @@ const CarteTitre: React.FC<{ titre: string; sous?: string; th: Theme; etiquette?
   );
 };
 
+// ---------- question au public : carte « ? » + commentaire qui s'écrit ----------
+const Question: React.FC<{ v: Extract<Visuel, { type: "question" }>; th: Theme }> = ({ v, th }) => {
+  const f = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const tuile = spring({ frame: f - 4, fps, config: { damping: 10, stiffness: 140 } });
+  const msg = v.texte || "Dis-le en commentaire…";
+  const n = Math.round(interpolate(f, [18, 18 + msg.length * 1.4], [0, msg.length], clamp));
+  const envoye = f > 24 + msg.length * 1.4;
+  const coeurs = Math.round(interpolate(f, [30 + msg.length * 1.4, 80 + msg.length * 1.4], [0, 128], { ...clamp, easing: doux }));
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 40 }}>
+      <div style={{ width: 300, height: 300, borderRadius: 80, background: `linear-gradient(145deg, #5b85ff, ${BLEU} 45%, #0f2a9e)`,
+        display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: POLICE, fontWeight: 800, fontSize: 210,
+        boxShadow: `0 40px 90px ${BLEU}88, inset 0 4px 0 rgba(255,255,255,0.35)`,
+        transform: `scale(${tuile}) rotate(${(1 - tuile) * -25 + Math.sin(f / 20) * 4}deg)` }}>?</div>
+      <Carte th={th} largeur={800} pad={28} style={{ display: "flex", alignItems: "center", gap: 22, borderRadius: 999, padding: "20px 22px 20px 34px" }}>
+        <div style={{ flex: 1, fontSize: 38, fontWeight: 600, color: n ? th.carteTexte : th.carteDoux, whiteSpace: "nowrap", overflow: "hidden" }}>
+          {msg.slice(0, n)}{!envoye && <span style={{ opacity: f % 16 < 8 ? 1 : 0, color: BLEU }}>|</span>}
+        </div>
+        <div style={{ width: 74, height: 74, borderRadius: 37, background: envoye ? "#0b1440" : BLEU, color: "#fff", fontSize: 38,
+          display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800 }}>{envoye ? "✓" : "↑"}</div>
+      </Carte>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: POLICE, fontWeight: 800, fontSize: 40, color: th.texte,
+        opacity: coeurs ? 1 : 0 }}>
+        <span style={{ color: ROUGE }}>♥</span>{coeurs}
+      </div>
+    </div>
+  );
+};
+
 export const Widget: React.FC<{ v: Visuel; th: Theme; duree: number }> = ({ v, th, duree }) => {
   switch (v.type) {
     case "compteur": return <Compteur v={v} th={th} />;
@@ -296,6 +326,7 @@ export const Widget: React.FC<{ v: Visuel; th: Theme; duree: number }> = ({ v, t
     case "post": return <Post v={v} th={th} duree={duree} />;
     case "prix": return <Prix v={v} th={th} />;
     case "image": return <ImageJeu v={v} th={th} duree={duree} />;
+    case "question": return <Question v={v} th={th} />;
     default: return <CarteTitre titre={v.titre || ""} sous={v.sous} th={th} />;
   }
 };

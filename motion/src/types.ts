@@ -16,7 +16,8 @@ export type Visuel =
   | { type: "liste"; titre?: string; items: string[] }
   | { type: "post"; auteur: string; texte: string; reseau?: string }
   | { type: "prix"; montant: string; legende?: string }
-  | { type: "image"; src: string; legende?: string; cherche?: string };
+  | { type: "image"; src: string; legende?: string; cherche?: string }
+  | { type: "question"; texte?: string };
 
 export type Segment = {
   titre?: string;

@@ -133,7 +133,7 @@ def preparer_visuels(segs, hook, graine):
         v = g.get("visuel") or deduire_visuel(g, i, hook)
         if v is None:
             # alternance image du jeu / carte titre pour les segments sans chiffre
-            veut_image = (rang_libre % 2 == 0)
+            veut_image = g.get("suite") or (rang_libre % 2 == 0)
             rang_libre += 1
             v = {"type": "image", "legende": g.get("titre") or None} if veut_image else \
                 {"type": "carte", "titre": g.get("titre") or (hook if i == 0 else "")}
@@ -153,10 +153,49 @@ def preparer_visuels(segs, hook, graine):
     return segs
 
 
+# ---------------------------------------------------------------- découpage en scènes
+APPEL = re.compile(r"^(et toi|et vous|dis[- ]moi|abonne)|\?$", re.I)
+
+
+def decouper_scenes(segs, max_lettres=95):
+    """Une scène ne doit pas durer trop longtemps sur le même visuel (style motion : ça bouge tout le temps).
+    - la question au public + « Abonne-toi » passent dans une scène « question » à part
+    - un segment trop long est coupé en deux à la fin d'une phrase (2e moitié : nouveau visuel)"""
+    res = []
+    for g in segs:
+        phrases = [p for p in re.split(r"(?<=[.!?])\s+", g["texte"].strip()) if p]
+        k = next((i for i, p in enumerate(phrases) if APPEL.search(p.replace("*", "").strip())), None)
+        if k is not None and k > 0:
+            corps, appel = phrases[:k], phrases[k:]
+        else:
+            corps, appel = phrases, []
+        if k == 0 and not g.get("visuel"):
+            g = {**g, "visuel": {"type": "question"}}
+        morceaux = [corps]
+        if len(" ".join(corps)) > max_lettres and len(corps) >= 2:
+            total, acc, cut = len(" ".join(corps)), 0, 1
+            for i, p in enumerate(corps[:-1]):
+                acc += len(p) + 1
+                if acc >= total / 2:
+                    cut = i + 1; break
+                cut = i + 1
+            morceaux = [corps[:cut], corps[cut:]]
+        for j, m in enumerate(morceaux):
+            if not m:
+                continue
+            if j == 0:
+                res.append({**g, "texte": " ".join(m)})
+            else:
+                res.append({"texte": " ".join(m), "etiquette": g.get("etiquette", ""), "suite": True})
+        if appel:
+            res.append({"texte": " ".join(appel), "etiquette": "", "visuel": {"type": "question"}})
+    return res
+
+
 # ---------------------------------------------------------------- props + rendu
 def construire_props(script_path, voix=None, total=None):
     s = json.load(open(script_path, encoding="utf-8"))
-    segs = [dict(g) for g in (s.get("segments") or [{"texte": s.get("texte", ""), "titre": s.get("titre_ecran", "")}])]
+    segs = decouper_scenes([dict(g) for g in (s.get("segments") or [{"texte": s.get("texte", ""), "titre": s.get("titre_ecran", "")}])])
     mots = mots_du_script(segs)
     al = None
     if voix:
