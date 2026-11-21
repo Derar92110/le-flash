@@ -1,0 +1,38 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : 99 pour la presse, 5,5 pour les joueurs #GTA6 #shorts",
+  "hook": "FLASH DU SOIR · JOUR 3",
+  "segments": [
+    {
+      "texte": "Édition du soir. La presse donne *99* à GTA 6. Les joueurs, 5,5.",
+      "etiquette": "",
+      "visuel": {"type": "jauge", "valeur": 99, "legende": "Note de la presse sur Metacritic"}
+    },
+    {
+      "titre": "Avis négatifs",
+      "texte": "Un : sur Metacritic, environ *17 500* joueurs ont mis une mauvaise note. Certains parlent de sabotage organisé.",
+      "etiquette": "",
+      "visuel": {"type": "compteur", "valeur": 17500, "unite": "avis négatifs", "legende": "Metacritic, version PS5"}
+    },
+    {
+      "titre": "Les acheteurs",
+      "texte": "Deux : sur le PlayStation Store, les acheteurs lui donnent *4,8* sur 5.",
+      "etiquette": "",
+      "visuel": {"type": "compteur", "valeur": 4.84, "unite": "/ 5", "legende": "Environ 180 000 notes d'acheteurs"}
+    },
+    {
+      "titre": "Jason soumis",
+      "texte": "Trois : des joueurs se moquent de Jason, coincé à faire les *courses* pour Lucia. Chef-d'œuvre ou surcoté ? Abonne-toi pour ton Flash de demain matin !",
+      "etiquette": "",
+      "visuel": {"type": "image", "cherche": "jason", "legende": "Jason, le héros de GTA 6"}
+    }
+  ],
+  "description": "Le Flash du soir, 21 novembre 2026, JOUR 3 de GTA 6.\n\n1. Metacritic (version PS5) : 99 pour la presse, 5,5 pour les joueurs, avec environ 18 200 avis positifs, 2 900 mitigés et 17 500 négatifs (PlayFront). Les critiques négatives visent les 30 images/s, le rythme lent, la place de la romance et des missions trop guidées ; une partie des avis ne contient que des insultes ou des slogans politiques, d'où les accusations de review bombing.\n2. Sur le PlayStation Store, où seuls les acheteurs peuvent noter : 4,84/5 sur environ 180 000 notes (iXBT).\n3. Des joueurs se moquent de Jason, « coincé » à faire les courses et les tâches ménagères en petit ami dévoué (débat relayé par TMZ). Ces activités sont facultatives.",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "note GTA 6", "Metacritic GTA 6", "review bombing"],
+  "hashtags": ["#Metacritic", "#Polemique"],
+  "sources": [
+    "PlayFront, 21/11/2026 (Metacritic 5,5 joueurs, répartition des avis) : https://playfront.de/en/gta-6-spaltet-die-community-55-user-score-steht-gegen-99-punkte-der-presse/",
+    "iXBT Games, 21/11/2026 (PlayStation Store 4,84/5) : https://ixbt.games/en/news/2026/11/21/99-ballov-ot-kritikov-i-55-ot-igrokov-gta-vi-podverglas-massovomu-reviu-bombingu.html",
+    "TMZ, 20/11/2026 (Jason « simp ») : https://www.tmz.com/2026/11/20/gta-iv-gamers-outraged-over-simp-main-character/"
+  ]
+}
