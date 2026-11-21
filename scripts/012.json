@@ -1,0 +1,65 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : Rockstar a supprimé ça, les joueurs se déchirent #GTA6 #shorts",
+  "hook": "FLASH GTA 6 · JOUR 3",
+  "segments": [
+    {
+      "texte": "Rockstar a retiré une fonction culte de GTA 6. Les joueurs se déchirent.",
+      "etiquette": "",
+      "visuel": {
+        "type": "image",
+        "cherche": "lucia",
+        "legende": "GTA 6, jour 3"
+      }
+    },
+    {
+      "titre": "Fonction supprimée",
+      "texte": "Un : fini les prostituées, présentes depuis *GTA 3*. Rockstar préfère miser sur le couple Jason et Lucia.",
+      "etiquette": "",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 25,
+        "unite": "ans",
+        "legende": "Présentes depuis GTA III (2001)"
+      }
+    },
+    {
+      "titre": "Censure au Japon",
+      "texte": "Deux : au Japon, le jeu est censuré. Moins de sang, et douche en *maillot*.",
+      "etiquette": "",
+      "visuel": {
+        "type": "image",
+        "cherche": "jason",
+        "legende": "Version japonaise"
+      }
+    },
+    {
+      "titre": "Réservé aux abonnés",
+      "texte": "Trois : selon une capture sur X, une voiture et un garage sont réservés aux abonnés *GTA+*. Logique ou scandale ? Abonne-toi pour ton Flash de demain !",
+      "etiquette": "",
+      "visuel": {
+        "type": "video",
+        "legende": "Bonus GTA+"
+      }
+    }
+  ],
+  "description": "Le Flash du jour, 21 novembre 2026, JOUR 3 de GTA 6.\n\n1. Les prostituées, présentes dans la série depuis GTA III (2001), ne sont plus dans GTA 6. Rockstar a expliqué à Shacknews que le jeu parle d'un couple en cavale, Jason et Lucia. Les clubs de strip-tease restent. Les joueurs sont divisés.\n2. Version japonaise : sang et gore réduits sans option pour les remettre, et Jason et Lucia se douchent en maillot de bain (posts X de Genki_JPN et Pochaos7, relayés par VGC). Rockstar n'a pas commenté.\n3. Selon une capture partagée sur X (non vérifiée), l'abonnement GTA+ donne une voiture (Annis Elegy widebody) et un garage à Crosstown, récupérables au chapitre 3, plus des réductions. Rockstar n'a pas répondu à LADbible.",
+  "tags": [
+    "GTA 6",
+    "GTA VI",
+    "Grand Theft Auto 6",
+    "Le Flash",
+    "polémique GTA 6",
+    "GTA 6 censure Japon",
+    "GTA+"
+  ],
+  "hashtags": [
+    "#Polemique",
+    "#Rockstar"
+  ],
+  "sources": [
+    "The Blast, 19/11/2026 (citant Shacknews ; suppression des prostituées) : https://theblast.com/887956/gta-vi-players-clash-rockstars-controversial-decision/",
+    "VGC, 19/11/2026 (censure japonaise, posts X Genki_JPN et Pochaos7) : https://www.videogameschronicle.com/news/japan-censors-gta-6s-violence-and-nudity-including-jason-in-the-shower/",
+    "LADbible, 19/11/2026 (bonus GTA+, capture X non vérifiée) : https://www.ladbible.com/entertainment/gaming/gta-6-in-game-paywall-032970-20261119"
+  ]
+}
