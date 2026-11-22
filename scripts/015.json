@@ -1,0 +1,66 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : « Cyberpunk 2077 bis » ? Les bugs qui font le buzz #GTA6 #shorts",
+  "hook": "FLASH DU SOIR · JOUR 4",
+  "segments": [
+    {
+      "texte": "Édition du soir. Des joueurs comparent GTA 6 à *Cyberpunk* 2077.",
+      "etiquette": "",
+      "visuel": {
+        "type": "video",
+        "legende": "Les bugs de GTA 6 font le buzz"
+      }
+    },
+    {
+      "titre": "Bugs viraux",
+      "texte": "Un : sur X, un perso traverse le sol d'une *prison* et réapparaît sur la route.",
+      "etiquette": "",
+      "visuel": {
+        "type": "post",
+        "auteur": "@GTA6Alerts",
+        "texte": "Un personnage tombe à travers le sol d'une prison, « injouable »"
+      }
+    },
+    {
+      "titre": "Clip choquant",
+      "texte": "Deux : un clip où un joueur abat une passante puis fait un selfie dépasse *8 millions* de vues.",
+      "etiquette": "",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 8,
+        "unite": "millions de vues",
+        "legende": "Clip viral sur X"
+      }
+    },
+    {
+      "titre": "Huit nominations",
+      "texte": "Trois : pourtant, le jeu est nommé *huit fois* aux Game Awards. Jeu buggé ou joueurs de mauvaise foi ? Abonne-toi pour ton Flash de demain matin !",
+      "etiquette": "",
+      "visuel": {
+        "type": "compteur",
+        "valeur": 8,
+        "unite": "nominations",
+        "legende": "The Game Awards 2026"
+      }
+    }
+  ],
+  "description": "Le Flash du soir, 22 novembre 2026, JOUR 4 de GTA 6.\n\n1. Des clips de bugs tournent sur X : un personnage tombe à travers le sol d'une prison et réapparaît sur une route (@GTA6Alerts), un bateau coincé sous un pont (@yoxics), un perso aspiré dans un mur de bureau (@MichaelDoesLife, qui parle de « Cyberpunk 2077 bis »). Futurism et Last Word on Gaming rappellent que ces exemples ne reflètent pas l'expérience de la plupart des joueurs.\n2. Un clip où un joueur tue une PNJ sans raison puis prend un selfie avec le corps dépasse 8 millions de vues ; beaucoup y voient de la misogynie (BuzzFeed, via Yahoo).\n3. GTA VI compte 8 nominations aux Game Awards (Last Word on Gaming). Rockstar n'a commenté aucun de ces sujets.",
+  "tags": [
+    "GTA 6",
+    "GTA VI",
+    "Grand Theft Auto 6",
+    "Le Flash",
+    "bugs GTA 6",
+    "Game Awards GTA 6",
+    "polémique GTA 6"
+  ],
+  "hashtags": [
+    "#Bugs",
+    "#GameAwards"
+  ],
+  "sources": [
+    "Futurism, 19/11/2026 (bugs viraux sur X) : https://futurism.com/future-society/gta-6-bugs",
+    "BuzzFeed via Yahoo, 20/11/2026 (clip à plus de 8 millions de vues) : https://www.yahoo.com/news/us/articles/viral-gta-vi-clip-female-143002438.html",
+    "Last Word on Gaming, 19/11/2026 (bugs, 8 nominations aux Game Awards) : https://lastwordongaming.com/2026/11/19/gta-6-launch-bugs/"
+  ]
+}
