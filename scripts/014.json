@@ -1,0 +1,38 @@
+{
+  "format": "short",
+  "titre": "GTA 6 : détesté par les joueurs, 3,79 milliards en un jour #GTA6 #shorts",
+  "hook": "FLASH GTA 6 · JOUR 4",
+  "segments": [
+    {
+      "texte": "Les joueurs le notent 5,5. Mais GTA 6 a rapporté *3,79 milliards* en un jour.",
+      "etiquette": "",
+      "visuel": {"type": "compteur", "valeur": 3.79, "unite": "milliards $", "legende": "Take-Two, jour de sortie"}
+    },
+    {
+      "titre": "Record officiel",
+      "texte": "Un : c'est officiel, Take-Two annonce *32,5 millions* de copies vendues avant même la sortie.",
+      "etiquette": "",
+      "visuel": {"type": "compteur", "valeur": 32.5, "unite": "millions", "legende": "Copies vendues avant la sortie"}
+    },
+    {
+      "titre": "Avengers battu",
+      "texte": "Deux : en un seul jour, il dépasse toute la carrière d'*Avengers Endgame* au cinéma.",
+      "etiquette": "",
+      "visuel": {"type": "classement", "titre": "Recettes", "cible": "GTA 6", "de": 2, "a": 1, "note": "3,79 Md$ en 1 jour contre 2,94 Md$ pour Endgame"}
+    },
+    {
+      "titre": "Guerre des streamers",
+      "texte": "Trois : en live, *Asmongold* se moque d'un Jason trop soumis. Hasan Piker, lui, applaudit. Rageux ou lucides ? Abonne-toi pour ton Flash de demain !",
+      "etiquette": "",
+      "visuel": {"type": "image", "cherche": "jason", "legende": "Le débat enflamme Twitch"}
+    }
+  ],
+  "description": "Le Flash du jour, 22 novembre 2026, JOUR 4 de GTA 6.\n\n1. Take-Two annonce officiellement 32,5 millions de copies vendues avant la sortie et environ 3,79 milliards de dollars de ventes jusqu'à la fin du jour de lancement (19/11), « le plus grand lancement de l'histoire du divertissement ». Pendant ce temps, la note des joueurs sur Metacritic est de 5,5.\n2. Avengers: Endgame a rapporté 2,94 milliards de dollars au box-office sur toute sa carrière (Kotaku).\n3. En stream, Asmongold s'est moqué des scènes de courses de Jason et Lucia ; Hasan Piker a salué le virage de la série sur X (Cosmic Book News).",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "ventes GTA 6", "Take-Two", "Asmongold GTA 6"],
+  "hashtags": ["#TakeTwo", "#Polemique"],
+  "sources": [
+    "Kotaku, 20/11/2026 (chiffres officiels Take-Two, comparaison Endgame) : https://kotaku.com/gta-6-sold-32-5-million-copies-in-pre-release-as-take-two-crowns-it-the-biggest-entertainment-launch-in-history-2000758965",
+    "Forbes, 20/11/2026 (3,79 Md$, annonce Take-Two) : https://www.forbes.com/sites/antoniopequenoiv/2026/11/20/gta-6-raked-in-38-billion-sales-on-first-day-the-largest-entertainment-launch-ever/",
+    "Cosmic Book News, 19-21/11/2026 (Asmongold, Hasan Piker) : https://cosmicbook.news/gta-6-woke-backlash"
+  ]
+}
