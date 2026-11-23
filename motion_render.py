@@ -258,7 +258,11 @@ def decouper_scenes(segs, max_lettres=95):
 # ---------------------------------------------------------------- props + rendu
 def construire_props(script_path, voix=None, total=None):
     s = json.load(open(script_path, encoding="utf-8"))
-    segs = decouper_scenes([dict(g) for g in (s.get("segments") or [{"texte": s.get("texte", ""), "titre": s.get("titre_ecran", "")}])])
+    bruts = [dict(g) for g in (s.get("segments") or [{"texte": s.get("texte", ""), "titre": s.get("titre_ecran", "")}])]
+    # fait choc en gros dès la 1re image (23/11/2026) : la 1re scène affiche « choc » si elle n'a pas de visuel imposé
+    if s.get("choc") and bruts and not bruts[0].get("visuel"):
+        bruts[0]["visuel"] = {"type": "carte", "titre": s["choc"]}
+    segs = decouper_scenes(bruts)
     mots = mots_du_script(segs)
     al = None
     if voix:

@@ -327,6 +327,11 @@ def ecrire_ass_brut(path, s, mots, tms, bornes_segments, total, c):
             coupe = min(range(len(g) - 1), key=lambda k: max(sum(lg[:k + 1]) + k, sum(lg[k + 1:]) + len(g) - k - 2))
         ligne = "".join(x + ("\\N" if k == coupe else " ") for k, x in enumerate(txt)).strip()
         L.append(f"Dialogue: 5,{ts(a)},{ts(b)},Sous,,0,0,0,,{{\\an5\\pos({W // 2},{y_sub})\\fad(60,0)}}{ligne}")
+    # fait choc en gros dès la 1re image (23/11/2026, demande de Medley : 50 % de swipe au début)
+    choc = (s.get("choc") or "").replace("{", "(").replace("}", ")").upper()
+    if choc:
+        L.append(f"Dialogue: 6,{ts(0)},{ts(min(2.6, total))},Choc,,0,0,0,,"
+                 f"{{\\an5\\pos({W // 2},{int(H * 0.30)})\\fscx118\\fscy118\\t(0,140,\\fscx100\\fscy100)\\fad(0,180)}}{choc}")
     # mentions discrètes en haut à gauche : édition (hook) puis étiquette de l'info
     hook = (s.get("hook") or "").replace("{", "(").replace("}", ")")
     if hook:
@@ -348,6 +353,7 @@ WrapStyle: 1
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Sous,Poppins,74,{blanc},{blanc},&H64000000,&H8C000000,1,0,0,0,100,100,0,0,1,2,4,5,70,70,0,1
 Style: Mention,Poppins,40,{blanc},{blanc},&H64000000,&H8C000000,1,0,0,0,100,100,1,0,1,1.5,3,7,0,0,0,1
+Style: Choc,Poppins,96,{blanc},{blanc},&H00000000,&H00000000,1,0,0,0,100,100,0,0,3,18,0,5,60,60,0,1
 Style: Credit,Poppins,30,&H33FFFFFF,&H33FFFFFF,&H64000000,&H8C000000,1,0,0,0,100,100,0,0,1,1,2,1,0,0,0,1
 
 [Events]
