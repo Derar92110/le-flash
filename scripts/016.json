@@ -1,0 +1,38 @@
+{
+  "format": "short",
+  "titre": "GTA 6 sur PC : encore des mois d'attente ? #GTA6 #shorts",
+  "hook": "FLASH GTA 6 · JOUR 5",
+  "segments": [
+    {
+      "texte": "Tu joues sur PC ? Tu vas encore *attendre* GTA 6.",
+      "etiquette": "",
+      "visuel": {"type": "image", "cherche": "vice city", "legende": "GTA 6, seulement sur console"}
+    },
+    {
+      "titre": "PC en 2027",
+      "texte": "Un : selon des sources de GamesBeat, la version PC sortirait début *2027*. Rockstar n'a rien confirmé.",
+      "etiquette": "",
+      "visuel": {"type": "calendrier", "jour": 1, "mois": "T1 2027", "legende": "Rumeur GamesBeat"}
+    },
+    {
+      "titre": "Pas d'Online",
+      "texte": "Deux : toujours pas de GTA *Online*. Le patron de Twitch avait parlé de l'an prochain.",
+      "etiquette": "",
+      "visuel": {"type": "video", "legende": "Le multijoueur se fait attendre"}
+    },
+    {
+      "titre": "Collector sans jeu",
+      "texte": "Trois : le collector coûte *399,99* dollars, sans le jeu dedans. Tu attends le PC ou tu craques sur console ? Abonne-toi pour ton Flash de demain !",
+      "etiquette": "",
+      "visuel": {"type": "prix", "montant": "399,99 $", "legende": "Collector Vice City, jeu non inclus"}
+    }
+  ],
+  "description": "Le Flash du jour, 23 novembre 2026, JOUR 5 de GTA 6.\n\n1. Selon un rapport de GamesBeat citant des sources internes (relayé par ScreenRant le 22/11), la version PC de GTA VI sortirait au premier trimestre 2027. Rumeur : Rockstar n'a rien confirmé, et le portage PC de GTA V avait été repoussé plusieurs fois.\n2. GTA VI n'a pas de mode en ligne au lancement. En septembre, le PDG de Twitch Dan Clancy avait évoqué un multijoueur « l'an prochain » (Bloomberg) ; Rockstar n'a rien annoncé.\n3. Le collector « The Goodtime State - Vice City Collection » coûte 399,99 dollars et ne contient pas le jeu (lunettes Oakley, figurine, vêtements, casquette).",
+  "tags": ["GTA 6", "GTA VI", "Grand Theft Auto 6", "Le Flash", "GTA 6 PC", "GTA 6 Online", "collector GTA 6"],
+  "hashtags": ["#PC", "#GTAOnline"],
+  "sources": [
+    "ScreenRant, 22/11/2026 (rapport GamesBeat, PC au T1 2027) : https://screenrant.com/gta-6-pc-release-date-update-november-2026/",
+    "Timesaver, mis à jour 19/11/2026 (Dan Clancy, Bloomberg, 17/09/2026) : https://timesaver.gg/blog/gta-6-online-multiplayer-confirmed-2026",
+    "Softonic, 02/10/2026 (collector à 399,99 $ sans le jeu) : https://fr.softonic.com/articles/gta-6-les-cadeaux-aux-influenceurs-font-grincer-les-fans-du-collector-a-39999-dollars"
+  ]
+}
