@@ -1,0 +1,33 @@
+{
+  "format": "short",
+  "titre": "GTA 6 argent infini : la faille marche encore ? #GTA6 #shorts",
+  "hook": "GTA 6 · ARGENT",
+  "choc": "10 000 $ toutes les 10 minutes",
+  "segments": [
+    {
+      "texte": "Dix mille dollars toutes les dix minutes : GTA 6 a déjà sa *faille* d'argent infini.",
+      "etiquette": ""
+    },
+    {
+      "titre": "Toujours là",
+      "texte": "La mise à jour du 23 novembre ne l'a pas corrigée, selon ComicBook et des joueurs.",
+      "etiquette": "",
+      "visuel": {"type": "calendrier", "jour": 23, "mois": "nov.", "legende": "Mise à jour 1.002.002"}
+    },
+    {
+      "titre": "Triche ?",
+      "texte": "Certains refusent pour garder le plaisir. Tu farmes ou tu joues *réglo* ? Abonne-toi pour la suite !",
+      "etiquette": "",
+      "visuel": {"type": "compteur", "valeur": 10000, "unite": "$ par tour"}
+    }
+  ],
+  "description": "GTA 6 a déjà une faille d'argent infini : en revendant du butin qui réapparaît dans une grange après une sauvegarde, on gagne environ 10 000 dollars par tour d'une dizaine de minutes (LADbible, d'après IGN, 21/11). La mise à jour 1.002.002 du 23 novembre ne la mentionne pas : selon ComicBook, elle devrait toujours marcher, et des joueurs confirment (PlayStation LifeStyle). Rockstar n'a rien dit. Certains joueurs l'évitent pour garder l'intérêt de la progression (TweakTown).",
+  "tags": ["GTA 6", "GTA VI", "GTA 6 argent infini", "GTA 6 money glitch", "GTA 6 astuce argent", "GTA 6 mise à jour", "Le Flash"],
+  "hashtags": ["#GTA6Astuce", "#ArgentInfini"],
+  "sources": [
+    "LADbible, 21/11/2026 (d'après IGN, ~10 000 $ par tour de ~10 min) : https://www.ladbible.com/entertainment/gaming/gta-6-infinite-money-glitch-jason-994211-20261121",
+    "ComicBook, 23/11/2026 (pas corrigée par la mise à jour) : https://comicbook.com/gaming/news/gta-6-money-infinite-glitch-bug-update/",
+    "PlayStation LifeStyle, 23/11/2026 (mise à jour 1.002.002, joueurs : la faille marche encore) : https://www.playstationlifestyle.net/2026/11/23/gta-6-update-1002002-november-23-2026-patch-notes",
+    "TweakTown, 22/11/2026 (des joueurs l'évitent) : https://www.tweaktown.com/news/114814/gta-6-already-has-an-infinite-money-glitch-but-many-players-are-skipping-it/index.html"
+  ]
+}
