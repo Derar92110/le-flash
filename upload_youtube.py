@@ -45,11 +45,12 @@ def main():
     ap.add_argument("video"); ap.add_argument("script")
     ap.add_argument("--publier-a", help="date ISO 8601 de mise en ligne programmée")
     ap.add_argument("--id-file", help="écrit l'ID de la vidéo publiée dans ce fichier")
+    ap.add_argument("--charte", help="charte de la chaîne (défaut : marque/charte.json)")
     ap.add_argument("--visibilite", default=os.environ.get("PUBLICATION", "public"),
                     choices=["private", "unlisted", "public"])
     a = ap.parse_args()
     s = json.load(open(a.script, encoding="utf-8"))
-    cp = os.path.join(ICI, "marque", "charte.json")
+    cp = a.charte or os.path.join(ICI, "marque", "charte.json")
     c = json.load(open(cp, encoding="utf-8")) if os.path.exists(cp) else {}
     desc = s.get("description", "")
     if s.get("sources"):
@@ -62,20 +63,21 @@ def main():
     # hashtags (idée de Medley 16/11) : 3 fixes + 1-2 du sujet (champ "hashtags" du script), max 5.
     # YouTube affiche les 3 premiers au-dessus du titre : on les met en tête de description.
     vus, tags_h = set(), []
-    for h in ["#GTA6", "#GTAVI", "#Shorts"] + s.get("hashtags", []) + ["#LeFlash"]:
+    fixes = c.get("hashtags_fixes", ["#GTA6", "#GTAVI", "#Shorts"])
+    for h in fixes + s.get("hashtags", []) + ([] if "hashtags_fixes" in c else ["#LeFlash"]):
         h = "#" + re.sub(r"[^\w]", "", h.lstrip("#"))
         if len(h) > 1 and h.lower() not in vus:
             vus.add(h.lower()); tags_h.append(h)
     desc = " ".join(tags_h[:5]) + "\n\n" + desc
     titre = s["titre"]
-    if "#gta6" not in titre.lower() and len(titre) + 7 <= 100:
+    if c.get("titre_gta6", True) and "#gta6" not in titre.lower() and len(titre) + 7 <= 100:
         titre = re.sub(r"\s*(#shorts)?\s*$", lambda m: " #GTA6" + (" " + m.group(1) if m.group(1) else ""), titre, count=1, flags=re.I)
     status = {"privacyStatus": a.visibilite, "selfDeclaredMadeForKids": False,
               "containsSyntheticMedia": False}  # retiré à la demande de Medley le 15/11 (voix off de narration)
     if a.publier_a:
         status["publishAt"] = a.publier_a
     body = {"snippet": {"title": titre[:100], "description": desc[:4900],
-                        "tags": s.get("tags", []), "categoryId": "20", "defaultLanguage": "fr-FR",
+                        "tags": s.get("tags", []), "categoryId": c.get("categorie", "20"), "defaultLanguage": "fr-FR",
                         "defaultAudioLanguage": "fr-FR"},
             "status": status}
     yt = service()

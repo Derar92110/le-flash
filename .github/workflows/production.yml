@@ -1,11 +1,9 @@
-name: Le Flash - production quotidienne
+name: Le Flash GTA 6 - production (arrêtée)
 
+# 24/11/2026 : la chaîne passe en « Dhikr du jour » (voir dhikr.yml). Le flux GTA 6 est arrêté :
+# plus de déclenchement automatique, seulement le bouton « Run workflow » au besoin.
 on:
-  push:
-    paths: ["scripts/**", "a_rendre_public.txt"]        # la veille de 7h35 pousse le script du jour
-  schedule:
-    - cron: "45 7 * * *"         # filet de sécurité : 8h45 heure de Paris (hiver)
-  workflow_dispatch: {}          # bouton « Run workflow » pour lancer à la main
+  workflow_dispatch: {}
 
 permissions:
   contents: write
