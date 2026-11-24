@@ -1,0 +1,75 @@
+name: Dhikr du jour - production quotidienne
+
+on:
+  schedule:
+    - cron: "40 16 * * *"        # 17h40 heure de Paris (hiver), 18h40 en été
+  workflow_dispatch:
+    inputs:
+      dhikr_id:
+        description: "Forcer une invocation (id de dhikr/invocations.json), vide = rotation"
+        required: false
+        default: ""
+      publier:
+        description: "Envoyer sur YouTube (sinon : aperçu seulement, téléchargeable dans le run)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dhikr
+  cancel-in-progress: false
+
+jobs:
+  produire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Outils (ffmpeg, librairies YouTube)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q google-api-python-client google-auth-oauthlib
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: motion/package-lock.json
+      - name: Moteur d'animation (Remotion)
+        run: cd motion && npm ci --no-audit --no-fund && npx remotion browser ensure
+
+      - name: Identifiants YouTube (depuis les secrets du dépôt)
+        if: github.event_name == 'schedule' || inputs.publier
+        env:
+          YT_CLIENT: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YT_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+        run: |
+          printf '%s' "$YT_CLIENT" > client_secret.json
+          printf '%s' "$YT_TOKEN" > token.json
+
+      - name: Animation + envoi
+        env:
+          DHIKR_ID: ${{ inputs.dhikr_id }}
+          AUTO_UPLOAD: ${{ (github.event_name == 'schedule' || inputs.publier) && '1' || '0' }}
+          PUBLICATION: ${{ vars.PUBLICATION_DHIKR || 'public' }}
+        run: python dhikr.py
+
+      - name: Garder une copie de la vidéo (7 jours)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dhikr-${{ github.run_number }}
+          path: sorties/dhikr-*.mp4
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Noter la vidéo publiée
+        if: github.event_name == 'schedule' || inputs.publier
+        run: |
+          rm -f client_secret.json token.json
+          git config user.name "dhikr-du-jour-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add dhikr/publies.txt
+          git diff --cached --quiet || (git commit -m "Dhikr publié $(date +%F)" && git pull --rebase && git push)

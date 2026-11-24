@@ -1,0 +1,10 @@
+{
+  "nom_chaine": "Dhikr du jour",
+  "couleurs": {"fond": "#050403", "or": "#e7c77a", "or_fonce": "#a8863f", "creme": "#efe6d2"},
+  "polices": {"arabe": "Amiri", "titres": "Cormorant Garamond", "texte": "Plus Jakarta Sans"},
+  "categorie": "22",
+  "hashtags_fixes": ["#dhikr", "#islam", "#Shorts"],
+  "titre_gta6": false,
+  "pied_description": "🤲 Un dhikr par jour, à dire avec nous : chapelet, compteur, arabe, phonétique et traduction.\nChaque invocation vient du Coran ou d'un hadith authentique, avec sa référence.\nEnregistre la vidéo pour la refaire après ta prière, et partage-la : celui qui guide vers un bien a la même récompense que celui qui le fait (Sahîh Muslim 1893).",
+  "playlists": {}
+}

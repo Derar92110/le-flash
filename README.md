@@ -87,3 +87,8 @@ Dans un script :
 - `"etiquette": "OFFICIEL" | "RUMEUR" | "LEAK"` affiche l'étiquette de source ;
 - format phare « Le Flash du jour » : au lieu de `texte`, une liste `segments` de 3 infos `{texte, etiquette}` ; le montage affiche 1/3, 2/3, 3/3 et l'étiquette de chaque info. Exemple : `scripts/exemple-flash-du-jour.json.txt`.
 Lancement sur PC : `installer.bat` une fois, puis `produire.bat` (voix + montage + envoi YouTube si `AUTO_UPLOAD=1`).
+
+---
+
+## 24/11/2026 : la chaîne devient « Dhikr du jour »
+Le flux GTA 6 est arrêté. Voir [`dhikr/README.md`](dhikr/README.md) pour le nouveau format, les règles et la publication quotidienne.
